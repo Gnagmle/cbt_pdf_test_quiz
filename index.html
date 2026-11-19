@@ -1,0 +1,2314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2025년 6월 21일 9급 지방직 공무원 컴퓨터일반 CBT</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Pretendard & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- PDF.js for optional external PDF upload -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans KR"', 'Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    .code-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-in {
+      animation: fadeSlideIn 0.25s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-indigo-100 selection:text-indigo-900">
+
+  <!-- 상단 헤더 바 -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm shrink-0">
+          CBT
+        </div>
+        <div>
+          <h1 id="exam-title" class="text-base sm:text-lg font-bold text-slate-900 leading-tight">
+            9급 지방직 공무원 컴퓨터일반 (2025.06.21)
+          </h1>
+          <p id="exam-subtitle" class="text-xs text-slate-500">
+            전자문제집 CBT 기출문제 실전 연습 · 총 20문항
+          </p>
+        </div>
+      </div>
+
+      <!-- 우측 컨트롤 버튼 (PDF 파일 불러오기 & 문제 목록 토글) -->
+      <div class="flex items-center gap-2">
+        <button id="open-answer-modal-btn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium bg-amber-50 hover:bg-amber-100 text-amber-800 transition border border-amber-200">
+          <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          <span>정답표 확인/수정</span>
+        </button>
+
+        <label for="pdf-upload" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200">
+          <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+          </svg>
+          <span>PDF 불러오기</span>
+          <input id="pdf-upload" type="file" accept="application/pdf" class="hidden" />
+        </label>
+
+        <button id="toggle-omr-btn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition border border-indigo-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7" />
+          </svg>
+          <span>문항 현황</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 진행률 바 -->
+    <div class="w-full bg-slate-100 h-1.5 overflow-hidden">
+      <div id="progress-bar" class="bg-indigo-600 h-full transition-all duration-300" style="width: 5%"></div>
+    </div>
+  </header>
+
+  <!-- 안내 메시지 배너 (alert 대체용) -->
+  <div id="toast-banner" class="hidden max-w-4xl mx-auto w-full px-4 pt-3">
+    <div id="toast-content" class="rounded-xl px-4 py-3 text-sm font-medium flex items-center justify-between shadow-sm border"></div>
+  </div>
+
+  <!-- 메인 컨테이너 -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+    <!-- 다과목 선택 탭 (100문항 5과목 PDF 업로드 시 표시) -->
+    <div id="subject-tabs" class="hidden mb-4 flex flex-wrap gap-2"></div>
+
+    <!-- OMR / 문항 바로가기 드로어 패널 -->
+    <section id="omr-panel" class="hidden mb-6 bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm animate-fade-in">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-bold text-slate-800">전체 문항 빠른 이동 (클릭하여 이동)</h2>
+        <div class="flex items-center gap-3 text-xs text-slate-500">
+          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>정답</span>
+          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>오답</span>
+          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-200 inline-block"></span>미풀이</span>
+        </div>
+      </div>
+      <div id="omr-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2"></div>
+    </section>
+
+    <!-- 퀴즈 카드 영역 -->
+    <div id="quiz-container" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden animate-fade-in">
+      <!-- 상단 상태 표시줄 -->
+      <div class="bg-slate-50 px-5 sm:px-7 py-3.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <span id="question-badge" class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs sm:text-sm font-bold">
+            문제 1 / 20
+          </span>
+          <span id="question-category" class="text-xs font-medium text-slate-500 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
+            데이터베이스
+          </span>
+        </div>
+        <div class="flex items-center gap-3 text-xs sm:text-sm font-semibold">
+          <span class="text-emerald-600">정답: <span id="correct-count">0</span></span>
+          <span class="text-slate-300">|</span>
+          <span class="text-rose-600">오답: <span id="wrong-count">0</span></span>
+        </div>
+      </div>
+
+      <!-- 문제 본문 및 시각 자료 -->
+      <div class="p-5 sm:p-8">
+        <div class="flex items-start justify-between gap-3 mb-5">
+          <h2 id="question-text" class="text-base sm:text-lg font-bold text-slate-900 leading-relaxed flex-1">
+            <!-- 문제 텍스트가 여기에 렌더링됩니다 -->
+          </h2>
+          <button id="toggle-pdf-crop-btn" type="button" class="hidden shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 border border-slate-200 hover:border-indigo-200 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span id="toggle-pdf-crop-text">원본 PDF 영역 보기</span>
+          </button>
+        </div>
+
+        <!-- 원본 PDF 수동 토글 이미지 컨테이너 (단/페이지 걸침 시 다중 세그먼트 순차 표시) -->
+        <div id="question-pdf-crop-box" class="hidden mb-5 bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
+          <div class="text-[11px] text-slate-400 mb-2 text-left font-medium">원본 PDF 문항 영역 스캔</div>
+          <div id="question-pdf-crop-list" class="space-y-3"></div>
+        </div>
+
+        <!-- 보기 박스 / 표 / 코드 / SVG 다이어그램 / 자동 감지 이미지 영역 -->
+        <div id="question-media" class="mb-6 empty:hidden"></div>
+
+        <!-- 선택지 리스트 (① ~ ④) -->
+        <div id="options-list" class="space-y-3"></div>
+
+        <!-- 정답 판정 및 해설 박스 (선택 후 표시) -->
+        <div id="feedback-box" class="hidden mt-6 rounded-2xl p-4 sm:p-5 border animate-fade-in">
+          <div class="flex items-start gap-3">
+            <div id="feedback-icon" class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 font-bold text-white"></div>
+            <div class="flex-1">
+              <h3 id="feedback-title" class="font-bold text-base mb-1"></h3>
+              <p id="feedback-explanation" class="text-sm leading-relaxed text-slate-700"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 하단 네비게이션 버튼 -->
+      <div class="bg-slate-50 px-5 sm:px-8 py-4 border-t border-slate-200 flex items-center justify-between gap-3">
+        <button id="prev-btn" type="button" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-white border border-slate-300 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition">
+          ← 이전 문제
+        </button>
+
+        <div class="hidden sm:block text-xs text-slate-400">
+          단축키: <kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600">1~4</kbd> 정답 선택 · <kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600">Enter</kbd> 다음 문제
+        </div>
+
+        <button id="next-btn" type="button" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition flex items-center gap-1.5">
+          <span id="next-btn-text">다음 문제</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 최종 결과 요약 화면 -->
+    <div id="result-container" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-10 animate-fade-in">
+      <div class="text-center max-w-lg mx-auto mb-8">
+        <div id="result-badge" class="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold mb-3"></div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">시험 결과 리포트</h2>
+        <p id="result-exam-name" class="text-sm text-slate-500 mb-6">9급 지방직 공무원 컴퓨터일반 (2025.06.21)</p>
+
+        <!-- 점수 원형/카드 요약 -->
+        <div class="grid grid-cols-3 gap-3 sm:gap-4 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200">
+          <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+            <div class="text-xs text-slate-500 mb-1">총점 (100점 만점)</div>
+            <div id="final-score" class="text-2xl sm:text-3xl font-extrabold text-indigo-600">0점</div>
+          </div>
+          <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+            <div class="text-xs text-slate-500 mb-1">정답 문항</div>
+            <div id="final-correct" class="text-2xl sm:text-3xl font-extrabold text-emerald-600">0개</div>
+          </div>
+          <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+            <div class="text-xs text-slate-500 mb-1">오답 문항</div>
+            <div id="final-wrong" class="text-2xl sm:text-3xl font-extrabold text-rose-600">0개</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 오답 노트 영역 -->
+      <div class="border-t border-slate-200 pt-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-base sm:text-lg font-bold text-slate-900">오답 및 전체 문항 복습</h3>
+          <div class="flex gap-2">
+            <button id="filter-wrong-btn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition">
+              틀린 문제만 보기
+            </button>
+            <button id="filter-all-btn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 transition">
+              전체 보기
+            </button>
+          </div>
+        </div>
+        <div id="review-list" class="space-y-4"></div>
+      </div>
+
+      <!-- 다시 풀기 버튼 -->
+      <div class="mt-8 pt-6 border-t border-slate-200 flex flex-wrap justify-center gap-3">
+        <button id="restart-btn" type="button" class="px-6 py-3 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition">
+          처음부터 다시 풀기
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="text-center text-xs text-slate-400 py-5 border-t border-slate-200 bg-white">
+    2025년 6월 21일 9급 지방직 공무원 컴퓨터일반 기출문제 CBT · 2D 좌표 기반 PDF 파싱 지원
+  </footer>
+
+  <!-- 정답표 확인/일괄 수정 모달 -->
+  <div id="answer-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-xl border border-slate-200 overflow-hidden animate-fade-in">
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-slate-900">정답표 확인 및 일괄 수정</h3>
+          <p class="text-xs text-slate-500 mt-0.5">PDF 정답표가 누락되었거나 오인식된 경우 숫자(1~4)나 원문자(①~④)를 붙여넣어 즉시 반영할 수 있습니다.</p>
+        </div>
+        <button id="close-answer-modal-btn" type="button" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">✕</button>
+      </div>
+      <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+        <div>
+          <label for="bulk-answer-input" class="block text-xs font-bold text-slate-700 mb-1.5">
+            정답 일괄 입력 (공백/줄바꿈 무관, 순서대로 1~4 또는 ①~④ 입력)
+          </label>
+          <div class="flex gap-2">
+            <input id="bulk-answer-input" type="text" placeholder="예: 4 2 1 2 1 3 2 3 3 1 2 1 4 3 1 2 4 3 4 2" class="flex-1 px-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-indigo-500 code-font" />
+            <button id="apply-bulk-answer-btn" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shrink-0 transition">
+              일괄 적용
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-slate-700">문항별 개별 정답 설정</span>
+            <span id="modal-answer-summary" class="text-xs font-semibold text-indigo-600"></span>
+          </div>
+          <div id="modal-answer-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-h-72 overflow-y-auto p-1"></div>
+        </div>
+      </div>
+      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button id="done-answer-modal-btn" type="button" class="px-5 py-2 rounded-xl text-sm font-bold bg-slate-800 hover:bg-slate-900 text-white transition">
+          확인 완료
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // PDF.js 워커 설정
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    /**
+     * 업로드된 PDF(9급지방직공무원컴퓨터일반20250621(학생용).pdf)의 20문항 전체 데이터 및 정답/해설
+     */
+    const DEFAULT_EXAM_TITLE = "9급 지방직 공무원 컴퓨터일반 (2025.06.21)";
+    const DEFAULT_QUESTIONS = [
+      {
+        num: 1,
+        category: "데이터베이스",
+        question: "데이터베이스에서 트랜잭션(transaction)의 성질이 아닌 것은?",
+        mediaHtml: "",
+        options: [
+          "원자성(atomicity)",
+          "일관성(consistency)",
+          "독립성(isolation)",
+          "의존성(dependency)"
+        ],
+        answer: 4,
+        explanation: "트랜잭션의 4대 성질(ACID)은 원자성(Atomicity), 일관성(Consistency), 독립성/격리성(Isolation), 영속성/지속성(Durability)입니다. 의존성(dependency)은 해당하지 않습니다."
+      },
+      {
+        num: 2,
+        category: "데이터통신/네트워크",
+        question: "IP 주소에 대한 설명으로 옳은 것은?",
+        mediaHtml: "",
+        options: [
+          "IPv4는 8바이트 주소 체계이다.",
+          "IPv6는 16바이트 주소 체계이다.",
+          "IPv6의 헤더 크기는 20바이트이다.",
+          "IPv4 주소가 143.248.166.12이면 클래스 C에 해당한다."
+        ],
+        answer: 2,
+        explanation: "IPv6는 128비트(16바이트) 주소 체계를 사용합니다. ① IPv4는 32비트(4바이트), ③ IPv6 기본 헤더는 40바이트, ④ 첫 옥텟 143(128~191)은 클래스 B에 해당합니다."
+      },
+      {
+        num: 3,
+        category: "자료표현/코드",
+        question: "EBCDIC(Extended Binary Coded Decimal Interchange Code)에 대한 설명으로 옳은 것만을 모두 고르면?",
+        mediaHtml: `
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm space-y-1.5 text-slate-800">
+            <div><span class="font-bold text-indigo-700 mr-1.5">ㄱ.</span> 표현할 수 있는 문자 수는 총 256개이다.</div>
+            <div><span class="font-bold text-indigo-700 mr-1.5">ㄴ.</span> 6비트를 사용하여 하나의 문자를 표시하는 방식이다.</div>
+            <div><span class="font-bold text-indigo-700 mr-1.5">ㄷ.</span> 7개의 데이터 비트와 1개의 패리티 비트로 구성되어 총 8개의 비트를 사용한다.</div>
+          </div>
+        `,
+        options: [
+          "ㄱ",
+          "ㄴ",
+          "ㄱ, ㄷ",
+          "ㄴ, ㄷ"
+        ],
+        answer: 1,
+        explanation: "EBCDIC 코드는 4비트의 존(Zone) 비트와 4비트의 디지트(Digit) 비트로 구성된 총 8비트 코드로, 2⁸ = 256개의 문자를 표현할 수 있습니다. (ㄷ은 패리티 비트를 포함한 ASCII 코드에 대한 설명입니다.)"
+      },
+      {
+        num: 4,
+        category: "알고리즘/정렬",
+        question: "다음은 입력으로 들어온 배열 [70, 11, 31, 3, 17, 9, 32, 23]에 대하여 오름차순으로 버블 정렬 알고리즘의 수행 과정을 단계별로 나타낸 것으로 (가)에 해당하는 것은?",
+        mediaHtml: `
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm code-font space-y-1.5 text-slate-800">
+            <div><span class="text-slate-500">&lt;초기 상태&gt;</span> 단계 0: [70, 11, 31, 3, 17, 9, 32, 23]</div>
+            <div>단계 1: [11, 31, 3, 17, 9, 32, 23, <span class="text-indigo-600 font-bold">70</span>]</div>
+            <div>단계 2: [11, 3, 17, 9, 31, 23, <span class="text-indigo-600 font-bold">32, 70</span>]</div>
+            <div>단계 3: [ <span class="px-2 py-0.5 bg-amber-100 text-amber-900 font-bold rounded border border-amber-300">(가)</span> ]</div>
+          </div>
+        `,
+        options: [
+          "3, 9, 11, 23, 17, 31, 32, 70",
+          "3, 11, 9, 17, 23, 31, 32, 70",
+          "11, 3, 9, 17, 23, 31, 32, 70",
+          "11, 3, 17, 9, 23, 31, 32, 70"
+        ],
+        answer: 2,
+        explanation: "단계 2의 [11, 3, 17, 9, 31, 23, 32, 70]에서 인접한 원소를 차례로 비교·교환하면 (11,3)→[3,11], (17,9)→[9,17], (31,23)→[23,31]이 되어 단계 3의 결과는 [3, 11, 9, 17, 23, 31, 32, 70]이 됩니다."
+      },
+      {
+        num: 5,
+        category: "컴퓨터구조/역사",
+        question: "프로그램 내장 방식을 적용한 컴퓨터만을 모두 고르면?",
+        mediaHtml: `
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm space-y-1.5 text-slate-800">
+            <div><span class="font-bold text-indigo-700 mr-1.5">ㄱ.</span> EDSAC(Electronic Delay Storage Automatic Computer)</div>
+            <div><span class="font-bold text-indigo-700 mr-1.5">ㄴ.</span> EDVAC(Electronic Discrete Variable Automatic Computer)</div>
+            <div><span class="font-bold text-indigo-700 mr-1.5">ㄷ.</span> ENIAC(Electronic Numerical Integrator And Computer)</div>
+            <div><span class="font-bold text-indigo-700 mr-1.5">ㄹ.</span> MARK I</div>
+          </div>
+        `,
+        options: [
+          "ㄱ, ㄴ",
+          "ㄱ, ㄹ",
+          "ㄴ, ㄷ",
+          "ㄷ, ㄹ"
+        ],
+        answer: 1,
+        explanation: "폰 노이만이 제안한 프로그램 내장 방식을 최초로 구현·실용화한 컴퓨터는 EDSAC(ㄱ)이며, 개념을 적용해 설계·완성된 컴퓨터는 EDVAC(ㄴ)입니다. ENIAC과 MARK I은 외부 배선(프로그램 외장) 방식입니다."
+      },
+      {
+        num: 6,
+        category: "운영체제",
+        question: "운영체제에서 가변 분할 메모리 관리 기법을 사용하고 있으며, 현재 비어 있는 메모리 상태를 순서대로 표현하면 다음과 같다. 새로운 프로세스가 12Kbyte 크기의 메모리를 요청하여 4번 위치로 할당되었다면, 이때 적용된 메모리 할당 기법은?",
+        mediaHtml: `
+          <div class="overflow-x-auto">
+            <table class="w-full max-w-md mx-auto text-sm text-center border border-slate-300 rounded-xl overflow-hidden">
+              <thead class="bg-slate-100 text-slate-700 font-bold">
+                <tr>
+                  <th class="py-2 px-4 border-b border-r border-slate-300">위치</th>
+                  <th class="py-2 px-4 border-b border-slate-300">빈 공간 크기</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 bg-white">
+                <tr><td class="py-2 px-4 border-r border-slate-200">1번</td><td class="py-2 px-4">10 Kbyte</td></tr>
+                <tr><td class="py-2 px-4 border-r border-slate-200">2번</td><td class="py-2 px-4">25 Kbyte</td></tr>
+                <tr><td class="py-2 px-4 border-r border-slate-200">3번</td><td class="py-2 px-4">30 Kbyte</td></tr>
+                <tr class="bg-indigo-50/70 font-semibold text-indigo-900"><td class="py-2 px-4 border-r border-slate-200">4번</td><td class="py-2 px-4">15 Kbyte</td></tr>
+              </tbody>
+            </table>
+          </div>
+        `,
+        options: [
+          "중앙 적합(center fit)",
+          "최악 적합(worst fit)",
+          "최적 적합(best fit)",
+          "최초 적합(first fit)"
+        ],
+        answer: 3,
+        explanation: "12Kbyte를 수용할 수 있는 빈 공간(2번: 25KB, 3번: 30KB, 4번: 15KB) 중 남는 단편화 공간이 가장 작은(15 - 12 = 3KB) 4번 위치에 할당하는 방식은 최적 적합(Best Fit)입니다."
+      },
+      {
+        num: 7,
+        category: "운영체제",
+        question: "다음 설명에 해당하는 운영체제의 메모리 영역은?",
+        mediaHtml: `
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-800">
+            프로세스 내에서 함수가 호출될 때 지역변수, 매개변수와 함수가 실행을 마치고 돌아갈 주소 등을 저장하기 위한 공간이다.
+          </div>
+        `,
+        options: [
+          "데이터(data) 영역",
+          "스택(stack) 영역",
+          "코드(code) 영역",
+          "힙(heap) 영역"
+        ],
+        answer: 2,
+        explanation: "함수 호출 시 생성되는 지역변수, 매개변수, 복귀 주소(Return Address) 등이 저장되는 메모리 영역은 스택(Stack) 영역입니다. (전역/정적 변수는 데이터 영역, 동적 할당은 힙 영역)"
+      },
+      {
+        num: 8,
+        category: "데이터통신/네트워크",
+        question: "컴퓨터 네트워크에 대한 설명으로 옳지 않은 것은?",
+        mediaHtml: "",
+        options: [
+          "TCP는 연결 지향적(connection-oriented)인 프로토콜이다.",
+          "ARP는 IP 주소로부터 MAC 주소를 구하기 위한 프로토콜이다.",
+          "ICMP는 MAC 주소로부터 IP 주소를 구하기 위한 프로토콜이다.",
+          "IPv4에서 클래스 B는 마지막 16비트를 호스트 주소로 사용한다."
+        ],
+        answer: 3,
+        explanation: "MAC 주소(물리 주소)로부터 IP 주소(논리 주소)를 구하기 위한 프로토콜은 RARP(Reverse ARP)입니다. ICMP는 네트워크 오류 보고 및 제어 메시지 전송용 프로토콜(예: ping)입니다."
+      },
+      {
+        num: 9,
+        category: "자료구조",
+        question: "다음 이진 트리를 중위 순회하는 경우 방문 순서는?",
+        mediaHtml: `
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex justify-center">
+            <svg viewBox="0 0 360 250" class="w-full max-w-xs h-auto">
+              <!-- 간선 -->
+              <g stroke="#475569" stroke-width="2">
+                <line x1="180" y1="30" x2="100" y2="90" />
+                <line x1="180" y1="30" x2="260" y2="90" />
+                <line x1="100" y1="90" x2="50" y2="155" />
+                <line x1="100" y1="90" x2="145" y2="155" />
+                <line x1="145" y1="155" x2="110" y2="220" />
+                <line x1="145" y1="155" x2="180" y2="220" />
+                <line x1="260" y1="90" x2="220" y2="155" />
+                <line x1="260" y1="90" x2="305" y2="155" />
+              </g>
+              <!-- 노드 -->
+              <g fill="#ffffff" stroke="#1e293b" stroke-width="2">
+                <circle cx="180" cy="30" r="17" />
+                <circle cx="100" cy="90" r="17" />
+                <circle cx="260" cy="90" r="17" />
+                <circle cx="50" cy="155" r="17" />
+                <circle cx="145" cy="155" r="17" />
+                <circle cx="110" cy="220" r="17" />
+                <circle cx="180" cy="220" r="17" />
+                <circle cx="220" cy="155" r="17" />
+                <circle cx="305" cy="155" r="17" />
+              </g>
+              <!-- 라벨 -->
+              <g font-family="Inter, sans-serif" font-size="14" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="#0f172a">
+                <text x="180" y="30">A</text>
+                <text x="100" y="90">B</text>
+                <text x="260" y="90">C</text>
+                <text x="50" y="155">D</text>
+                <text x="145" y="155">E</text>
+                <text x="110" y="220">H</text>
+                <text x="180" y="220">I</text>
+                <text x="220" y="155">F</text>
+                <text x="305" y="155">G</text>
+              </g>
+            </svg>
+          </div>
+        `,
+        options: [
+          "A, B, D, E, H, I, C, F, G",
+          "A, B, D, E, H, I, F, C, G",
+          "D, B, H, E, I, A, F, C, G",
+          "D, H, I, E, B, F, G, C, A"
+        ],
+        answer: 3,
+        explanation: "중위 순회(Inorder: Left → Root → Right) 순서대로 방문하면 왼쪽 서브트리(D → B → H → E → I) → 루트(A) → 오른쪽 서브트리(F → C → G)가 됩니다."
+      },
+      {
+        num: 10,
+        category: "최신 IT 기술",
+        question: "다음 설명에 해당하는 기술은?",
+        mediaHtml: `
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-800">
+            현실을 디지털 기반의 가상 세계로 확장해 가상 공간에서 모든 활동을 할 수 있게 만드는 기술이다. 정치, 경제, 사회, 문화 등 전반적 측면에서 현실과 비현실이 공존하는 생활형, 게임형 가상 세계라는 의미로 넓게 사용한다.
+          </div>
+        `,
+        options: [
+          "메타버스(metaverse)",
+          "사물인터넷(Internet of Things)",
+          "텔레메틱스(telematics)",
+          "NFT(Non-Fungible Token)"
+        ],
+        answer: 1,
+        explanation: "초월(Meta)과 세계(Universe)의 합성어인 메타버스(Metaverse)에 대한 설명입니다."
+      },
+      {
+        num: 11,
+        category: "멀티미디어",
+        question: "40KHz로 샘플링하고 10비트로 양자화하여 60초의 스테레오 음악 파일을 만들었을 때, 파일의 크기는? (단, 압축은 하지 않는다)",
+        mediaHtml: "",
+        options: [
+          "약 2Mbyte",
+          "약 6Mbyte",
+          "약 16Mbyte",
+          "약 48Mbyte"
+        ],
+        answer: 2,
+        explanation: "오디오 데이터 크기 = 샘플링 주파수 × 양자화 비트수 × 채널 수(스테레오=2) × 시간(초) = 40,000 × 10 × 2 × 60 = 48,000,000 bits입니다. 바이트로 환산하면 48,000,000 / 8 = 6,000,000 bytes ≈ 6Mbyte입니다."
+      },
+      {
+        num: 12,
+        category: "컴퓨터구조",
+        question: "다음 12비트 명령어 형식에 대하여 직접 주소 지정 방식(direct addressing mode)으로 지정할 수 있는 메모리의 최대 크기는? (단, 하나의 주소공간 크기는 1바이트이다)",
+        mediaHtml: `
+          <div class="max-w-md mx-auto border-2 border-slate-700 rounded-lg overflow-hidden grid grid-cols-12 text-center text-sm font-bold">
+            <div class="col-span-5 bg-slate-100 py-3 border-r-2 border-slate-700 text-slate-800">
+              연산코드 (5비트)
+            </div>
+            <div class="col-span-7 bg-indigo-50 py-3 text-indigo-900">
+              주소부 (7비트)
+            </div>
+          </div>
+        `,
+        options: [
+          "128바이트",
+          "256바이트",
+          "512바이트",
+          "1,024바이트"
+        ],
+        answer: 1,
+        explanation: "직접 주소 지정 방식에서는 명령어의 주소부(Operand) 비트가 실제 메모리 주소를 직접 가리킵니다. 주소부가 7비트이므로 2⁷ = 128개의 주소(128바이트)를 지정할 수 있습니다."
+      },
+      {
+        num: 13,
+        category: "자료표현/진법",
+        question: "값이 (01100000)₂가 아닌 것은? (단, 오른쪽 괄호 밖의 아래 첨자는 진법을 의미하고, +는 덧셈, ×는 곱셈 연산을 의미한다)",
+        mediaHtml: "",
+        options: [
+          "(60)₁₆",
+          "(60)₈ + (60)₈",
+          "(00110000)₂ × (00000010)₂",
+          "(46)₁₀에 대하여 왼쪽 산술 시프트 1회"
+        ],
+        answer: 4,
+        explanation: "(01100000)₂는 10진수로 64 + 32 = 96입니다.\n① (60)₁₆ = 6×16 = 96\n② (60)₈ + (60)₈ = 48 + 48 = 96\n③ 48 × 2 = 96\n④ 46을 왼쪽으로 1회 산술 시프트하면 46 × 2 = 92가 되어 96이 아닙니다."
+      },
+      {
+        num: 14,
+        category: "컴퓨터구조/캐시",
+        question: "크기가 32Kbyte이고 4-방향 집합 연관 사상(4-way set associative mapping)을 따르는 캐시(cache)가 있다. 각 캐시 블록의 크기가 64바이트일 때, 캐시 집합의 개수는?",
+        mediaHtml: "",
+        options: [
+          "32",
+          "64",
+          "128",
+          "256"
+        ],
+        answer: 3,
+        explanation: "전체 캐시 라인(블록) 수 = 32KB / 64B = (32 × 1024) / 64 = 512개입니다. 4-way 집합 연관 사상이므로 한 집합당 4개의 블록이 들어가며, 집합의 개수는 512 / 4 = 128개입니다."
+      },
+      {
+        num: 15,
+        category: "프로그래밍 언어(C)",
+        question: "다음 C 프로그램의 출력 결과는?",
+        mediaHtml: `
+          <pre class="bg-slate-900 text-slate-100 rounded-xl p-4 text-xs sm:text-sm code-font overflow-x-auto leading-relaxed"><code>#include &lt;stdio.h&gt;
+int main(void) {
+    int x = 100, y = 200;
+    int *px = &amp;x, *py = &amp;y, *tmp;
+    (*px) -= 10;
+    (*py) += 50;
+    tmp = px;
+    px = py;
+    py = tmp;
+    (*px) += 50;
+    (*py) -= 10;
+    printf("x: %d, y: %d\\n", x, y);
+    return 0;
+}</code></pre>
+        `,
+        options: [
+          "x: 80, y: 300",
+          "x: 140, y: 240",
+          "x: 240, y: 140",
+          "x: 300, y: 80"
+        ],
+        answer: 1,
+        explanation: "초기 px→x(100), py→y(200).\n① (*px)-=10 → x=90, (*py)+=50 → y=250.\n② 포인터 스왑 후 px→y, py→x.\n③ (*px)+=50 → y=300, (*py)-=10 → x=80.\n따라서 출력은 x: 80, y: 300입니다."
+      },
+      {
+        num: 16,
+        category: "운영체제/스케줄링",
+        question: "다음과 같이 준비 상태 큐에 프로세스가 도착했을 때, 타임 슬라이스가 4ms인 라운드 로빈(round-robin) 스케줄링으로 실행하면 프로세스의 평균 대기 시간은? (단, 프로세스 간 문맥 교환에 따른 오버헤드는 무시하고, 주어진 4개 프로세스 외에 처리할 다른 프로세스는 없다)",
+        mediaHtml: `
+          <div class="overflow-x-auto">
+            <table class="w-full max-w-md mx-auto text-sm text-center border border-slate-300 rounded-xl overflow-hidden">
+              <thead class="bg-slate-100 text-slate-700 font-bold">
+                <tr>
+                  <th class="py-2 px-3 border-b border-r border-slate-300">프로세스</th>
+                  <th class="py-2 px-3 border-b border-r border-slate-300">도착 시간(ms)</th>
+                  <th class="py-2 px-3 border-b border-slate-300">실행 시간(ms)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 bg-white">
+                <tr><td class="py-2 px-3 border-r border-slate-200 font-semibold">P₁</td><td class="py-2 px-3 border-r border-slate-200">0</td><td class="py-2 px-3">8</td></tr>
+                <tr><td class="py-2 px-3 border-r border-slate-200 font-semibold">P₂</td><td class="py-2 px-3 border-r border-slate-200">1</td><td class="py-2 px-3">4</td></tr>
+                <tr><td class="py-2 px-3 border-r border-slate-200 font-semibold">P₃</td><td class="py-2 px-3 border-r border-slate-200">2</td><td class="py-2 px-3">6</td></tr>
+                <tr><td class="py-2 px-3 border-r border-slate-200 font-semibold">P₄</td><td class="py-2 px-3 border-r border-slate-200">3</td><td class="py-2 px-3">5</td></tr>
+              </tbody>
+            </table>
+          </div>
+        `,
+        options: [
+          "4ms",
+          "11ms",
+          "18ms",
+          "44ms"
+        ],
+        answer: 2,
+        explanation: "간트 차트(타임슬라이스=4): P₁(0~4) → P₂(4~8, 완료) → P₃(8~12) → P₄(12~16) → P₁(16~20, 완료) → P₃(20~22, 완료) → P₄(22~23, 완료).\n각 대기시간(종료시간 - 도착시간 - 실행시간):\n• P₁: 20 - 0 - 8 = 12ms\n• P₂: 8 - 1 - 4 = 3ms\n• P₃: 22 - 2 - 6 = 14ms\n• P₄: 23 - 3 - 5 = 15ms\n평균 대기시간 = (12 + 3 + 14 + 15) / 4 = 44 / 4 = 11ms입니다."
+      },
+      {
+        num: 17,
+        category: "프로그래밍 언어(Python)",
+        question: "다음 파이썬 프로그램의 출력 결과는?",
+        mediaHtml: `
+          <pre class="bg-slate-900 text-slate-100 rounded-xl p-4 text-xs sm:text-sm code-font overflow-x-auto leading-relaxed"><code>val = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+rst = 0
+for i in range(2, len(val), 3):
+    rst = rst + val[i]
+print(rst)</code></pre>
+        `,
+        options: [
+          "21",
+          "26",
+          "24",
+          "30"
+        ],
+        answer: 4,
+        explanation: "len(val)은 12이므로 range(2, 12, 3)은 인덱스 i = 2, 5, 8, 11을 순회합니다. val[2]=3, val[5]=6, val[8]=9, val[11]=12이므로 rst = 3 + 6 + 9 + 12 = 30입니다."
+      },
+      {
+        num: 18,
+        category: "소프트웨어공학",
+        question: "애자일(agile) 방법론에 대한 설명으로 옳지 않은 것은?",
+        mediaHtml: "",
+        options: [
+          "고객의 요구 사항 변화를 허용하는 개발 방식이다.",
+          "익스트림 프로그래밍(XP)은 애자일 기법 중 하나이다.",
+          "구현 단계에서는 고객의 추가 요구 사항을 반영하지 않는다.",
+          "포괄적인 문서보다는 작동하는 프로그램에 더 가치를 둔다."
+        ],
+        answer: 3,
+        explanation: "애자일(Agile) 방법론은 개발 후반부(구현 단계)라도 고객의 추가·변경 요구 사항을 유연하게 수용하고 반영하는 반복적 개발 방식입니다."
+      },
+      {
+        num: 19,
+        category: "소프트웨어공학",
+        question: "객체지향 설계에서의 SOLID 원칙 중 '구체화가 아닌 추상화에 의존해야 한다'는 원칙은?",
+        mediaHtml: "",
+        options: [
+          "개방 폐쇄 원칙(open-closed principle)",
+          "단일 책임 원칙(single responsibility principle)",
+          "인터페이스 분리 원칙(interface segregation principle)",
+          "의존관계 역전 원칙(dependency inversion principle)"
+        ],
+        answer: 4,
+        explanation: "상위 모듈이 하위 모듈의 구체적인 구현에 의존하지 않고 추상화(인터페이스/추상 클래스)에 의존해야 한다는 원칙은 의존관계 역전 원칙(DIP)입니다."
+      },
+      {
+        num: 20,
+        category: "자료구조/그래프",
+        question: "위상 정렬(topological sort)이 가능한 그래프만을 모두 고르면?",
+        mediaHtml: `
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 sm:p-4">
+            <svg viewBox="0 0 540 330" class="w-full h-auto">
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="21" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#1e293b" />
+                </marker>
+              </defs>
+
+              <!-- ㄱ. DAG -->
+              <g transform="translate(10, 10)">
+                <text x="10" y="20" font-size="14" font-weight="bold" fill="#0f172a">ㄱ.</text>
+                <g stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)">
+                  <line x1="85" y1="25" x2="50" y2="75" />
+                  <line x1="85" y1="25" x2="155" y2="65" />
+                  <line x1="50" y1="75" x2="155" y2="65" />
+                  <line x1="50" y1="75" x2="85" y2="125" />
+                  <line x1="85" y1="125" x2="155" y2="65" />
+                </g>
+                <g fill="#fff" stroke="#1e293b" stroke-width="1.6">
+                  <circle cx="85" cy="25" r="13" />
+                  <circle cx="50" cy="75" r="13" />
+                  <circle cx="155" cy="65" r="13" />
+                  <circle cx="85" cy="125" r="13" />
+                </g>
+                <g font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">
+                  <text x="85" y="25">A</text><text x="50" y="75">B</text>
+                  <text x="155" y="65">C</text><text x="85" y="125">D</text>
+                </g>
+              </g>
+
+              <!-- ㄴ. 무방향 그래프 -->
+              <g transform="translate(275, 10)">
+                <text x="10" y="20" font-size="14" font-weight="bold" fill="#0f172a">ㄴ.</text>
+                <g stroke="#1e293b" stroke-width="1.6">
+                  <line x1="85" y1="25" x2="50" y2="75" />
+                  <line x1="85" y1="25" x2="155" y2="65" />
+                  <line x1="50" y1="75" x2="155" y2="65" />
+                  <line x1="50" y1="75" x2="85" y2="125" />
+                  <line x1="85" y1="125" x2="155" y2="65" />
+                  <line x1="155" y1="65" x2="225" y2="45" />
+                </g>
+                <g fill="#fff" stroke="#1e293b" stroke-width="1.6">
+                  <circle cx="85" cy="25" r="13" />
+                  <circle cx="50" cy="75" r="13" />
+                  <circle cx="155" cy="65" r="13" />
+                  <circle cx="85" cy="125" r="13" />
+                  <circle cx="225" cy="45" r="13" />
+                </g>
+                <g font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">
+                  <text x="85" y="25">A</text><text x="50" y="75">B</text>
+                  <text x="155" y="65">C</text><text x="85" y="125">D</text>
+                  <text x="225" y="45">E</text>
+                </g>
+              </g>
+
+              <!-- ㄷ. 사이클이 존재하는 방향 그래프 -->
+              <g transform="translate(10, 170)">
+                <text x="10" y="20" font-size="14" font-weight="bold" fill="#0f172a">ㄷ.</text>
+                <g stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)">
+                  <line x1="85" y1="25" x2="50" y2="75" />
+                  <line x1="155" y1="65" x2="85" y2="25" />
+                  <line x1="50" y1="75" x2="155" y2="65" />
+                  <line x1="50" y1="75" x2="85" y2="125" />
+                  <line x1="85" y1="125" x2="155" y2="65" />
+                  <line x1="155" y1="65" x2="220" y2="45" />
+                  <line x1="220" y1="45" x2="220" y2="105" />
+                  <line x1="220" y1="105" x2="155" y2="65" />
+                </g>
+                <g fill="#fff" stroke="#1e293b" stroke-width="1.6">
+                  <circle cx="85" cy="25" r="13" />
+                  <circle cx="50" cy="75" r="13" />
+                  <circle cx="155" cy="65" r="13" />
+                  <circle cx="85" cy="125" r="13" />
+                  <circle cx="220" cy="45" r="13" />
+                  <circle cx="220" cy="105" r="13" />
+                </g>
+                <g font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">
+                  <text x="85" y="25">A</text><text x="50" y="75">B</text>
+                  <text x="155" y="65">C</text><text x="85" y="125">D</text>
+                  <text x="220" y="45">E</text><text x="220" y="105">F</text>
+                </g>
+              </g>
+
+              <!-- ㄹ. DAG -->
+              <g transform="translate(275, 170)">
+                <text x="10" y="20" font-size="14" font-weight="bold" fill="#0f172a">ㄹ.</text>
+                <g stroke="#1e293b" stroke-width="1.6" marker-end="url(#arrow)">
+                  <line x1="85" y1="25" x2="50" y2="75" />
+                  <line x1="85" y1="25" x2="155" y2="65" />
+                  <line x1="50" y1="75" x2="155" y2="65" />
+                  <line x1="50" y1="75" x2="85" y2="125" />
+                  <line x1="155" y1="65" x2="85" y2="125" />
+                  <line x1="155" y1="65" x2="220" y2="45" />
+                  <line x1="155" y1="65" x2="220" y2="105" />
+                  <line x1="220" y1="45" x2="220" y2="105" />
+                  <line x1="220" y1="105" x2="160" y2="135" />
+                </g>
+                <g fill="#fff" stroke="#1e293b" stroke-width="1.6">
+                  <circle cx="85" cy="25" r="13" />
+                  <circle cx="50" cy="75" r="13" />
+                  <circle cx="155" cy="65" r="13" />
+                  <circle cx="85" cy="125" r="13" />
+                  <circle cx="220" cy="45" r="13" />
+                  <circle cx="220" cy="105" r="13" />
+                  <circle cx="160" cy="135" r="13" />
+                </g>
+                <g font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">
+                  <text x="85" y="25">A</text><text x="50" y="75">B</text>
+                  <text x="155" y="65">C</text><text x="85" y="125">D</text>
+                  <text x="220" y="45">E</text><text x="220" y="105">F</text>
+                  <text x="160" y="135">G</text>
+                </g>
+              </g>
+            </svg>
+          </div>
+        `,
+        options: [
+          "ㄱ, ㄴ",
+          "ㄱ, ㄹ",
+          "ㄴ, ㄷ",
+          "ㄷ, ㄹ"
+        ],
+        answer: 2,
+        explanation: "위상 정렬(Topological Sort)은 사이클이 없는 방향 그래프(DAG: Directed Acyclic Graph)에서만 가능합니다.\n• ㄱ, ㄹ: 사이클이 없는 방향 그래프(DAG) → 가능\n• ㄴ: 무방향 그래프 → 불가\n• ㄷ: 사이클(A→B→C→A, C→E→F→C) 존재 → 불가"
+      }
+    ];
+
+    // 애플리케이션 상태
+    let state = {
+      examTitle: DEFAULT_EXAM_TITLE,
+      questions: [...DEFAULT_QUESTIONS],
+      currentIndex: 0,
+      userAnswers: new Array(DEFAULT_QUESTIONS.length).fill(null), // 1~4 or null
+      showOMR: false,
+      reviewFilter: 'all' // 'all' | 'wrong'
+    };
+
+    const CIRCLED_NUMS = ["①", "②", "③", "④"];
+
+    // DOM 요소 참조
+    const els = {
+      examTitle: document.getElementById("exam-title"),
+      examSubtitle: document.getElementById("exam-subtitle"),
+      progressBar: document.getElementById("progress-bar"),
+      toastBanner: document.getElementById("toast-banner"),
+      toastContent: document.getElementById("toast-content"),
+      omrPanel: document.getElementById("omr-panel"),
+      omrGrid: document.getElementById("omr-grid"),
+      toggleOmrBtn: document.getElementById("toggle-omr-btn"),
+      quizContainer: document.getElementById("quiz-container"),
+      questionBadge: document.getElementById("question-badge"),
+      questionCategory: document.getElementById("question-category"),
+      correctCount: document.getElementById("correct-count"),
+      wrongCount: document.getElementById("wrong-count"),
+      questionText: document.getElementById("question-text"),
+      togglePdfCropBtn: document.getElementById("toggle-pdf-crop-btn"),
+      togglePdfCropText: document.getElementById("toggle-pdf-crop-text"),
+      questionPdfCropBox: document.getElementById("question-pdf-crop-box"),
+      questionPdfCropList: document.getElementById("question-pdf-crop-list"),
+      questionMedia: document.getElementById("question-media"),
+      optionsList: document.getElementById("options-list"),
+      feedbackBox: document.getElementById("feedback-box"),
+      feedbackIcon: document.getElementById("feedback-icon"),
+      feedbackTitle: document.getElementById("feedback-title"),
+      feedbackExplanation: document.getElementById("feedback-explanation"),
+      prevBtn: document.getElementById("prev-btn"),
+      nextBtn: document.getElementById("next-btn"),
+      nextBtnText: document.getElementById("next-btn-text"),
+      resultContainer: document.getElementById("result-container"),
+      resultBadge: document.getElementById("result-badge"),
+      resultExamName: document.getElementById("result-exam-name"),
+      finalScore: document.getElementById("final-score"),
+      finalCorrect: document.getElementById("final-correct"),
+      finalWrong: document.getElementById("final-wrong"),
+      reviewList: document.getElementById("review-list"),
+      filterWrongBtn: document.getElementById("filter-wrong-btn"),
+      filterAllBtn: document.getElementById("filter-all-btn"),
+      restartBtn: document.getElementById("restart-btn"),
+      pdfUpload: document.getElementById("pdf-upload"),
+      subjectTabs: document.getElementById("subject-tabs"),
+      openAnswerModalBtn: document.getElementById("open-answer-modal-btn"),
+      answerModal: document.getElementById("answer-modal"),
+      closeAnswerModalBtn: document.getElementById("close-answer-modal-btn"),
+      doneAnswerModalBtn: document.getElementById("done-answer-modal-btn"),
+      bulkAnswerInput: document.getElementById("bulk-answer-input"),
+      applyBulkAnswerBtn: document.getElementById("apply-bulk-answer-btn"),
+      modalAnswerGrid: document.getElementById("modal-answer-grid"),
+      modalAnswerSummary: document.getElementById("modal-answer-summary")
+    };
+
+    // 알림 배너 표시 함수 (alert 대체)
+    function showToast(message, type = "info") {
+      const styles = {
+        info: "bg-indigo-50 text-indigo-800 border-indigo-200",
+        success: "bg-emerald-50 text-emerald-800 border-emerald-200",
+        error: "bg-rose-50 text-rose-800 border-rose-200"
+      };
+      els.toastContent.className = `rounded-xl px-4 py-3 text-sm font-medium flex items-center justify-between shadow-sm border ${styles[type] || styles.info}`;
+      els.toastContent.innerHTML = `
+        <span>${message}</span>
+        <button type="button" onclick="document.getElementById('toast-banner').classList.add('hidden')" class="ml-4 text-xs underline opacity-75 hover:opacity-100">닫기</button>
+      `;
+      els.toastBanner.classList.remove("hidden");
+    }
+
+    // 점수 통계 계산
+    function getStats() {
+      let correct = 0;
+      let wrong = 0;
+      state.questions.forEach((q, idx) => {
+        const picked = state.userAnswers[idx];
+        if (picked !== null) {
+          if (picked === q.answer) correct++;
+          else wrong++;
+        }
+      });
+      return { correct, wrong };
+    }
+
+    // OMR 그리드 렌더링
+    function renderOMR() {
+      els.omrGrid.innerHTML = "";
+      state.questions.forEach((q, idx) => {
+        const picked = state.userAnswers[idx];
+        const isCurrent = idx === state.currentIndex;
+        let btnStyle = "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200";
+        if (picked !== null) {
+          btnStyle = picked === q.answer
+            ? "bg-emerald-500 text-white border-emerald-600"
+            : "bg-rose-500 text-white border-rose-600";
+        }
+        if (isCurrent) {
+          btnStyle += " ring-2 ring-indigo-600 ring-offset-1";
+        }
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `py-2 rounded-lg text-xs font-bold border transition ${btnStyle}`;
+        btn.textContent = `${q.num}번`;
+        btn.addEventListener("click", () => {
+          state.currentIndex = idx;
+          els.resultContainer.classList.add("hidden");
+          els.quizContainer.classList.remove("hidden");
+          renderQuestion();
+        });
+        els.omrGrid.appendChild(btn);
+      });
+    }
+
+    // 현재 문제 화면 렌더링
+    function renderQuestion() {
+      const total = state.questions.length;
+      const idx = state.currentIndex;
+      const q = state.questions[idx];
+      const userChoice = state.userAnswers[idx];
+      const isAnswered = userChoice !== null;
+      const { correct, wrong } = getStats();
+
+      // 상단 제목, 부제목, 배지, 통계 및 진행률 업데이트
+      els.examTitle.textContent = state.examTitle;
+      if (els.examSubtitle) {
+        els.examSubtitle.textContent = `전자문제집 CBT 기출문제 실전 연습 · 총 ${total}문항`;
+      }
+      if (els.questionBadge) {
+        els.questionBadge.textContent = `문제 ${q.num} / ${total}`;
+      }
+      if (els.questionCategory) {
+        els.questionCategory.textContent = q.category || "기출문항";
+      }
+      if (els.correctCount) {
+        els.correctCount.textContent = String(correct);
+      }
+      if (els.wrongCount) {
+        els.wrongCount.textContent = String(wrong);
+      }
+      if (els.progressBar) {
+        const pct = Math.round(((idx + 1) / total) * 100);
+        els.progressBar.style.width = `${pct}%`;
+      }
+
+      // 문제 본문 및 시각 자료(SVG/표/코드/자동 감지 이미지) 렌더링
+      els.questionText.textContent = `${q.num}. ${q.question}`;
+      els.questionMedia.innerHTML = q.mediaHtml || "";
+
+      // 원본 PDF 영역 수동 토글 버튼 제어 (단일 및 페이지/컬럼 걸침 다중 이미지 지원)
+      els.questionPdfCropBox.classList.add("hidden");
+      const cropUrls = Array.isArray(q.fullQuestionCropUrls) && q.fullQuestionCropUrls.length > 0
+        ? q.fullQuestionCropUrls
+        : (q.fullQuestionCropUrl ? [q.fullQuestionCropUrl] : []);
+
+      if (cropUrls.length > 0) {
+        els.togglePdfCropBtn.classList.remove("hidden");
+        els.togglePdfCropText.textContent = cropUrls.length > 1
+          ? `원본 PDF 영역 보기 (${cropUrls.length}구간)`
+          : "원본 PDF 영역 보기";
+        els.questionPdfCropList.innerHTML = cropUrls.map((url, segIdx) => `
+          <div>
+            ${cropUrls.length > 1 ? `<div class="text-[11px] text-slate-500 font-semibold mb-1 text-left">구간 ${segIdx + 1}</div>` : ""}
+            <img src="${url}" alt="원본 PDF 문항 영역 ${segIdx + 1}" class="max-w-full h-auto max-h-none mx-auto rounded-lg border border-slate-200 bg-white shadow-2xs" />
+          </div>
+        `).join("");
+      } else {
+        els.togglePdfCropBtn.classList.add("hidden");
+        els.questionPdfCropList.innerHTML = "";
+      }
+
+      // 선택지 버튼 렌더링
+      els.optionsList.innerHTML = "";
+      q.options.forEach((optText, optIdx) => {
+        const optionNum = optIdx + 1;
+        const btn = document.createElement("button");
+        btn.type = "button";
+
+        let baseClass = "w-full text-left p-4 rounded-xl border-2 transition-all flex items-center justify-between gap-3 group ";
+        let badgeClass = "w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0 border ";
+        let statusIcon = "";
+
+        if (!isAnswered) {
+          baseClass += "bg-white border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/40 cursor-pointer";
+          badgeClass += "bg-slate-100 text-slate-700 border-slate-300 group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600";
+        } else {
+          btn.disabled = true;
+          if (optionNum === q.answer) {
+            baseClass += "bg-emerald-50 border-emerald-500 text-emerald-950 font-semibold shadow-sm";
+            badgeClass += "bg-emerald-600 text-white border-emerald-600";
+            statusIcon = `<span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full shrink-0">✓ 정답</span>`;
+          } else if (optionNum === userChoice && userChoice !== q.answer) {
+            baseClass += "bg-rose-50 border-rose-500 text-rose-950 font-semibold";
+            badgeClass += "bg-rose-600 text-white border-rose-600";
+            statusIcon = `<span class="inline-flex items-center gap-1 text-xs font-bold text-rose-700 bg-rose-100 px-2.5 py-1 rounded-full shrink-0">✕ 내 선택</span>`;
+          } else {
+            baseClass += "bg-slate-50/70 border-slate-200 text-slate-400 opacity-75";
+            badgeClass += "bg-slate-100 text-slate-400 border-slate-200";
+          }
+        }
+
+        btn.className = baseClass;
+        btn.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="${badgeClass}">${optionNum}</span>
+            <span class="text-sm sm:text-base leading-snug">${optText}</span>
+          </div>
+          ${statusIcon}
+        `;
+
+        if (!isAnswered) {
+          btn.addEventListener("click", () => handleSelectOption(optionNum));
+        }
+
+        els.optionsList.appendChild(btn);
+      });
+
+      // 정답 선택 시 피드백 및 해설 표시
+      if (isAnswered) {
+        const isCorrect = userChoice === q.answer;
+        els.feedbackBox.classList.remove("hidden");
+        if (isCorrect) {
+          els.feedbackBox.className = "mt-6 rounded-2xl p-4 sm:p-5 border bg-emerald-50/90 border-emerald-200 animate-fade-in";
+          els.feedbackIcon.className = "w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 font-bold text-white bg-emerald-600";
+          els.feedbackIcon.textContent = "✓";
+          els.feedbackTitle.className = "font-bold text-base mb-1 text-emerald-900";
+          els.feedbackTitle.textContent = `정답입니다! (${CIRCLED_NUMS[q.answer - 1]}번)`;
+        } else {
+          els.feedbackBox.className = "mt-6 rounded-2xl p-4 sm:p-5 border bg-rose-50/90 border-rose-200 animate-fade-in";
+          els.feedbackIcon.className = "w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 font-bold text-white bg-rose-600";
+          els.feedbackIcon.textContent = "✕";
+          els.feedbackTitle.className = "font-bold text-base mb-1 text-rose-900";
+          els.feedbackTitle.textContent = `오답입니다. 선택한 답: ${CIRCLED_NUMS[userChoice - 1]} / 실제 정답: ${CIRCLED_NUMS[q.answer - 1]}`;
+        }
+        els.feedbackExplanation.textContent = q.explanation || `정답은 ${CIRCLED_NUMS[q.answer - 1]}번입니다.`;
+      } else {
+        els.feedbackBox.classList.add("hidden");
+      }
+
+      // 이전/다음 버튼 상태 업데이트
+      els.prevBtn.disabled = idx === 0;
+      if (idx === total - 1) {
+        els.nextBtnText.textContent = "결과 확인하기";
+      } else {
+        els.nextBtnText.textContent = "다음 문제";
+      }
+
+      renderOMR();
+    }
+
+    // 선택지 클릭 처리
+    function handleSelectOption(optionNum) {
+      if (state.userAnswers[state.currentIndex] !== null) return;
+      state.userAnswers[state.currentIndex] = optionNum;
+      renderQuestion();
+    }
+
+    // 최종 결과 화면 렌더링
+    function renderResults() {
+      els.quizContainer.classList.add("hidden");
+      els.resultContainer.classList.remove("hidden");
+      els.progressBar.style.width = "100%";
+
+      const total = state.questions.length;
+      const { correct, wrong } = getStats();
+      const score = Math.round((correct / total) * 100);
+      const isPass = score >= 60;
+
+      els.resultExamName.textContent = state.examTitle;
+      els.finalScore.textContent = `${score}점`;
+      els.finalCorrect.textContent = `${correct}개`;
+      els.finalWrong.textContent = `${wrong}개`;
+
+      if (isPass) {
+        els.resultBadge.className = "inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold mb-3 bg-emerald-100 text-emerald-800";
+        els.resultBadge.textContent = "🎉 합격권 달성 (60점 이상)";
+      } else {
+        els.resultBadge.className = "inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold mb-3 bg-rose-100 text-rose-800";
+        els.resultBadge.textContent = "📚 추가 학습 권장 (60점 미만)";
+      }
+
+      renderReviewList();
+    }
+
+    // 오답 및 전체 복습 리스트 렌더링
+    function renderReviewList() {
+      els.reviewList.innerHTML = "";
+      const items = state.questions.map((q, idx) => ({
+        q,
+        idx,
+        picked: state.userAnswers[idx],
+        isCorrect: state.userAnswers[idx] === q.answer
+      })).filter(item => state.reviewFilter === 'all' || !item.isCorrect);
+
+      if (items.length === 0) {
+        els.reviewList.innerHTML = `
+          <div class="text-center py-8 bg-slate-50 rounded-xl border border-slate-200 text-sm text-slate-500">
+            틀린 문제가 없습니다! 완벽하게 해결하셨습니다.
+          </div>
+        `;
+        return;
+      }
+
+      items.forEach(({ q, picked, isCorrect }) => {
+        const card = document.createElement("div");
+        card.className = `p-4 sm:p-5 rounded-xl border ${isCorrect ? "bg-white border-slate-200" : "bg-rose-50/40 border-rose-200"}`;
+
+        const userText = picked ? `${CIRCLED_NUMS[picked - 1]} ${q.options[picked - 1]}` : "미응답";
+        const ansText = `${CIRCLED_NUMS[q.answer - 1]} ${q.options[q.answer - 1]}`;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-md ${isCorrect ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}">
+              ${q.num}번 · ${isCorrect ? "정답" : "오답"}
+            </span>
+            <span class="text-xs text-slate-400">${q.category || ""}</span>
+          </div>
+          <p class="text-sm font-bold text-slate-900 mb-3">${q.num}. ${q.question}</p>
+          <div class="text-xs sm:text-sm space-y-1 mb-2.5">
+            <div class="${isCorrect ? "text-emerald-700" : "text-rose-700"} font-medium">• 내 선택: ${userText}</div>
+            <div class="text-emerald-700 font-bold">• 실제 정답: ${ansText}</div>
+          </div>
+          <p class="text-xs text-slate-600 bg-slate-100/80 p-3 rounded-lg leading-relaxed">${q.explanation}</p>
+        `;
+        els.reviewList.appendChild(card);
+      });
+    }
+
+    // 이벤트 리스너 등록
+    els.prevBtn.addEventListener("click", () => {
+      if (state.currentIndex > 0) {
+        state.currentIndex--;
+        renderQuestion();
+      }
+    });
+
+    els.nextBtn.addEventListener("click", () => {
+      if (state.currentIndex < state.questions.length - 1) {
+        state.currentIndex++;
+        renderQuestion();
+      } else {
+        renderResults();
+      }
+    });
+
+    els.toggleOmrBtn.addEventListener("click", () => {
+      state.showOMR = !state.showOMR;
+      els.omrPanel.classList.toggle("hidden", !state.showOMR);
+    });
+
+    els.togglePdfCropBtn.addEventListener("click", () => {
+      const isHidden = els.questionPdfCropBox.classList.toggle("hidden");
+      els.togglePdfCropText.textContent = isHidden ? "원본 PDF 영역 보기" : "원본 PDF 영역 접기";
+    });
+
+    els.filterWrongBtn.addEventListener("click", () => {
+      state.reviewFilter = 'wrong';
+      renderReviewList();
+    });
+
+    els.filterAllBtn.addEventListener("click", () => {
+      state.reviewFilter = 'all';
+      renderReviewList();
+    });
+
+    els.restartBtn.addEventListener("click", () => {
+      state.currentIndex = 0;
+      state.userAnswers = new Array(state.questions.length).fill(null);
+      state.reviewFilter = 'all';
+      els.resultContainer.classList.add("hidden");
+      els.quizContainer.classList.remove("hidden");
+      renderQuestion();
+    });
+
+    // 키보드 단축키 지원 (1~4: 보기 선택, Enter / ArrowRight: 다음 문제, ArrowLeft: 이전 문제)
+    document.addEventListener("keydown", (e) => {
+      if (!els.answerModal.classList.contains("hidden")) {
+        if (e.key === "Escape") closeAnswerModal();
+        return;
+      }
+      if (!els.resultContainer.classList.contains("hidden")) return;
+
+      if (["1", "2", "3", "4"].includes(e.key)) {
+        const num = parseInt(e.key, 10);
+        if (state.userAnswers[state.currentIndex] === null) {
+          handleSelectOption(num);
+        }
+      } else if (e.key === "Enter" || e.key === "ArrowRight") {
+        e.preventDefault();
+        els.nextBtn.click();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        if (!els.prevBtn.disabled) els.prevBtn.click();
+      }
+    });
+
+    /**
+     * 다과목 빠른 이동 탭 렌더링 (100문항 5과목 등 여러 과목이 감지된 경우 표시)
+     */
+    function renderSubjectTabs() {
+      if (!els.subjectTabs) return;
+      const subjectStarts = [];
+      const seenCategories = new Set();
+
+      state.questions.forEach((q, idx) => {
+        const cat = (q.category || "").trim();
+        if (cat && !seenCategories.has(cat)) {
+          seenCategories.add(cat);
+          subjectStarts.push({ category: cat, index: idx, startNum: q.num });
+        }
+      });
+
+      if (subjectStarts.length <= 1) {
+        els.subjectTabs.classList.add("hidden");
+        els.subjectTabs.innerHTML = "";
+        return;
+      }
+
+      els.subjectTabs.classList.remove("hidden");
+      els.subjectTabs.innerHTML = "";
+      subjectStarts.forEach((subj) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 hover:border-indigo-300 shadow-2xs transition";
+        btn.textContent = `${subj.category} (${subj.startNum}번~)`;
+        btn.addEventListener("click", () => {
+          state.currentIndex = subj.index;
+          els.resultContainer.classList.add("hidden");
+          els.quizContainer.classList.remove("hidden");
+          renderQuestion();
+        });
+        els.subjectTabs.appendChild(btn);
+      });
+    }
+
+    /**
+     * 정답표 확인 / 수정 모달 제어 함수
+     */
+    function openAnswerModal() {
+      if (!els.answerModal) return;
+      renderAnswerModalGrid();
+      els.bulkAnswerInput.value = state.questions.map(q => q.answer).join(" ");
+      els.answerModal.classList.remove("hidden");
+    }
+
+    function closeAnswerModal() {
+      if (!els.answerModal) return;
+      els.answerModal.classList.add("hidden");
+      renderQuestion();
+      if (!els.resultContainer.classList.contains("hidden")) {
+        renderResults();
+      }
+    }
+
+    function renderAnswerModalGrid() {
+      if (!els.modalAnswerGrid) return;
+      els.modalAnswerGrid.innerHTML = "";
+
+      const matchedCount = state.questions.filter(q => q.answerMatched !== false).length;
+      if (els.modalAnswerSummary) {
+        els.modalAnswerSummary.textContent = `총 ${state.questions.length}문항 (자동인식 ${matchedCount}문항)`;
+      }
+
+      state.questions.forEach((q, idx) => {
+        const row = document.createElement("div");
+        row.className = "flex items-center justify-between gap-1.5 px-2.5 py-2 rounded-xl border border-slate-200 bg-slate-50/70";
+
+        const label = document.createElement("span");
+        label.className = "text-xs font-bold text-slate-700 shrink-0";
+        label.textContent = `${q.num}번`;
+        row.appendChild(label);
+
+        const btnGroup = document.createElement("div");
+        btnGroup.className = "flex items-center gap-1";
+
+        [1, 2, 3, 4].forEach((choiceNum) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          const isSelected = q.answer === choiceNum;
+          btn.className = isSelected
+            ? "w-6 h-6 rounded-md text-xs font-bold bg-indigo-600 text-white shadow-2xs transition"
+            : "w-6 h-6 rounded-md text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:bg-indigo-50 transition";
+          btn.textContent = String(choiceNum);
+          btn.addEventListener("click", () => {
+            state.questions[idx].answer = choiceNum;
+            state.questions[idx].answerMatched = true;
+            state.questions[idx].explanation = `정답표 기준 정답은 ${CIRCLED_NUMS[choiceNum - 1]}번입니다.`;
+            els.bulkAnswerInput.value = state.questions.map(item => item.answer).join(" ");
+            renderAnswerModalGrid();
+          });
+          btnGroup.appendChild(btn);
+        });
+
+        row.appendChild(btnGroup);
+        els.modalAnswerGrid.appendChild(row);
+      });
+    }
+
+    function applyBulkAnswers() {
+      const raw = (els.bulkAnswerInput?.value || "").trim();
+      if (!raw) {
+        showToast("일괄 적용할 정답 숫자(1~4 또는 ①~④)를 입력해주세요.", "error");
+        return;
+      }
+
+      const parsedChoices = [];
+      for (const ch of raw) {
+        const val = normalizeAnswerToken(ch);
+        if (val !== null) parsedChoices.push(val);
+      }
+
+      if (parsedChoices.length === 0) {
+        showToast("유효한 정답 번호(1~4 또는 ①~④)가 감지되지 않았습니다.", "error");
+        return;
+      }
+
+      const applyCount = Math.min(state.questions.length, parsedChoices.length);
+      for (let i = 0; i < applyCount; i++) {
+        const ans = parsedChoices[i];
+        state.questions[i].answer = ans;
+        state.questions[i].answerMatched = true;
+        state.questions[i].explanation = `정답표 기준 정답은 ${CIRCLED_NUMS[ans - 1]}번입니다.`;
+      }
+
+      renderAnswerModalGrid();
+      renderQuestion();
+      showToast(`1번부터 ${applyCount}번까지 총 ${applyCount}문항의 정답이 반영되었습니다.`, "success");
+    }
+
+    if (els.openAnswerModalBtn) {
+      els.openAnswerModalBtn.addEventListener("click", openAnswerModal);
+    }
+    if (els.closeAnswerModalBtn) {
+      els.closeAnswerModalBtn.addEventListener("click", closeAnswerModal);
+    }
+    if (els.doneAnswerModalBtn) {
+      els.doneAnswerModalBtn.addEventListener("click", closeAnswerModal);
+    }
+    if (els.applyBulkAnswerBtn) {
+      els.applyBulkAnswerBtn.addEventListener("click", applyBulkAnswers);
+    }
+    if (els.answerModal) {
+      els.answerModal.addEventListener("click", (e) => {
+        if (e.target === els.answerModal) closeAnswerModal();
+      });
+    }
+
+    /**
+     * 외부 전자문제집 CBT PDF 파일 업로드 및 2D 좌표 + 고해상도 캔버스 이미지 추출 파싱
+     */
+    els.pdfUpload.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      let parsed = null;
+      try {
+        showToast("PDF의 2D 좌표, 그림/도표 영역 및 정답표를 분석하는 중입니다...", "info");
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const pagesData = [];
+        const RENDER_SCALE = 2.0;
+
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          const page = await pdf.getPage(pageNum);
+          const viewport = page.getViewport({ scale: 1.0 });
+          const renderViewport = page.getViewport({ scale: RENDER_SCALE });
+          const content = await page.getTextContent();
+
+          // 고해상도 오프스크린 캔버스 렌더링 (문항 내 그림/표/수식 크롭용)
+          let canvas = null;
+          try {
+            canvas = document.createElement("canvas");
+            canvas.width = Math.floor(renderViewport.width);
+            canvas.height = Math.floor(renderViewport.height);
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            await page.render({ canvasContext: ctx, viewport: renderViewport }).promise;
+          } catch (renderErr) {
+            console.warn("페이지 캔버스 렌더링 생략:", renderErr);
+            canvas = null;
+          }
+
+          // 내장 래스터 이미지 / 벡터 그래픽 연산자 검사
+          let hasGraphicOps = false;
+          try {
+            const opList = await page.getOperatorList();
+            const OPS = pdfjsLib.OPS;
+            hasGraphicOps = opList.fnArray.some(
+              fn =>
+                fn === OPS.paintImageXObject ||
+                fn === OPS.paintInlineImageXObject ||
+                fn === OPS.paintImageMaskXObject
+            );
+          } catch (_) {
+            hasGraphicOps = false;
+          }
+
+          const tokens = content.items
+            .filter(item => item.str && item.str.trim().length > 0)
+            .map(item => ({
+              str: item.str.trim(),
+              x: item.transform[4],
+              y: item.transform[5],
+              w: item.width || 0,
+              h: item.height || 10
+            }));
+
+          pagesData.push({
+            pageNum,
+            width: viewport.width,
+            height: viewport.height,
+            scale: RENDER_SCALE,
+            canvas,
+            hasGraphicOps,
+            tokens
+          });
+        }
+
+        parsed = parseComcbtPdf2D(pagesData, file.name.replace(/\.pdf$/i, ""));
+      } catch (err) {
+        console.error("PDF 파싱 오류:", err);
+        showToast("PDF 파일을 읽는 중 오류가 발생했습니다. 올바른 PDF 파일인지 확인해주세요.", "error");
+        e.target.value = "";
+        return;
+      }
+
+      // 파싱 완료 후 상태 반영 및 화면 렌더링 분리
+      try {
+        if (parsed && parsed.questions && parsed.questions.length >= 1) {
+          state.examTitle = parsed.title;
+          state.questions = parsed.questions;
+          state.currentIndex = 0;
+          state.userAnswers = new Array(parsed.questions.length).fill(null);
+          els.resultContainer.classList.add("hidden");
+          els.quizContainer.classList.remove("hidden");
+
+          renderSubjectTabs();
+          renderQuestion();
+
+          const matchedCount = parsed.matchedAnswerCount;
+          const mediaDetectedCount = parsed.questions.filter(q => q.hasAutoImage).length;
+          const mediaNote = mediaDetectedCount > 0 ? ` (그림/도표 ${mediaDetectedCount}건 자동 추출)` : "";
+
+          if (matchedCount >= parsed.questions.length) {
+            showToast(`총 ${parsed.questions.length}문항 / 정답 ${matchedCount}개 인식 완료!${mediaNote}`, "success");
+          } else if (matchedCount > 0) {
+            showToast(`총 ${parsed.questions.length}문항 중 ${matchedCount}개 정답 인식 완료.${mediaNote} 누락된 정답은 상단 [정답표 확인/수정]에서 보완할 수 있습니다.`, "info");
+          } else {
+            showToast(`총 ${parsed.questions.length}문항을 불러왔으나 정답표를 찾지 못했습니다.${mediaNote} 상단 [정답표 확인/수정]으로 정답을 입력해주세요.`, "error");
+          }
+        } else {
+          showToast("표준 CBT 형식의 문항을 인식하지 못해 기본 기출문제를 유지합니다.", "error");
+        }
+      } catch (uiErr) {
+        console.error("화면 렌더링 오류:", uiErr);
+      } finally {
+        e.target.value = "";
+      }
+    });
+
+    /**
+     * 2D 좌표(x, y) 기반 전자문제집 CBT(comcbt.com) 파서
+     * 1) 2단 편집(좌단/우단) 분리 및 y좌표 행 메타데이터(y, xMin, pageObj) 유지
+     * 2) 홍보/바닥글 문구(comcbt.com 안내 블록) 차단
+     * 3) 문항 내 길고 큰 그림/도표/수식 영역의 픽셀 바운딩 박스 자동 감지 및 고해상도 캔버스 크롭
+     * 4) 마지막 페이지(들)의 정답표 그리드 1:1 매칭
+     */
+    const PROMO_BOILERPLATE_REGEX = /(전자문제집\s*CBT\s*홈페이지|기출문제\s*및\s*해설집\s*다운로드|전자문제집\s*CBT\s*앱|전자문제집\s*CBT란\??|종이\s*문제집이\s*아닌\s*인터넷으로|모의고사,\s*오답\s*노트,\s*해설까지|실제\s*시험에서\s*사용하는\s*OMR\s*형식의\s*CBT|PC\s*버전\s*및\s*모바일\s*버전\s*완벽\s*연동|교사용\/학생용\s*관리기능도\s*제공|오답\s*및\s*오탈자가\s*수정된|최신\s*수정된\s*\(오타,\s*오답|최강\s*자격증\s*기출문제\s*전자문제집|www\.comcbt\.com)/i;
+
+    function stripComcbtBoilerplate(str) {
+      if (!str) return "";
+      const match = str.match(PROMO_BOILERPLATE_REGEX);
+      if (match && typeof match.index === "number") {
+        return str.slice(0, match.index).trim();
+      }
+      return str.trim();
+    }
+
+    function parseComcbtPdf2D(pagesData, fallbackTitle) {
+      const answerMap = extractAnswerKeyFrom2D(pagesData);
+
+      // 2단 컬럼(Page 1 Left -> Page 1 Right -> Page 2 Left -> Page 2 Right ...) 스트림 및 세그먼트 경계 메타데이터 생성
+      const columnStreams = [];
+      let orderedLineObjs = [];
+
+      for (const page of pagesData) {
+        const midX = page.width * 0.49;
+        const bodyTopY = page.height - 42;
+        const bodyBottomY = 32;
+
+        const bodyTokens = page.tokens.filter(t => {
+          if (PROMO_BOILERPLATE_REGEX.test(t.str)) return false;
+          // 최상단 시험지 제목 헤더 및 최하단 페이지 번호 영역 제외
+          if (t.y > bodyTopY || t.y < bodyBottomY) return false;
+          return true;
+        });
+
+        const leftTokens = bodyTokens.filter(t => t.x < midX);
+        const rightTokens = bodyTokens.filter(t => t.x >= midX);
+
+        const leftColMeta = {
+          streamIndex: columnStreams.length,
+          page,
+          col: "left",
+          bodyTopY,
+          bodyBottomY
+        };
+        columnStreams.push(leftColMeta);
+
+        const rightColMeta = {
+          streamIndex: columnStreams.length,
+          page,
+          col: "right",
+          bodyTopY,
+          bodyBottomY
+        };
+        columnStreams.push(rightColMeta);
+
+        const leftLines = groupTokensIntoLineObjects(leftTokens, 6, page, "left", leftColMeta);
+        const rightLines = groupTokensIntoLineObjects(rightTokens, 6, page, "right", rightColMeta);
+
+        orderedLineObjs.push(...leftLines, ...rightLines);
+      }
+
+      const questions = [];
+      let currentSubject = "기출문항";
+      let currentQ = null;
+      let inPromoSection = false;
+
+      for (const lineObj of orderedLineObjs) {
+        const line = lineObj.text;
+
+        // 전자문제집 CBT 홍보 안내 블록 시작 시 이후 홍보 줄 무시 (새 문항 번호가 나오면 해제)
+        if (PROMO_BOILERPLATE_REGEX.test(line)) {
+          inPromoSection = true;
+          continue;
+        }
+
+        // 과목 헤더 감지 (예: "1과목 : 소프트웨어 설계")
+        const subjMatch = line.match(/^(\d+\s*과목\s*[:：]\s*.+)$/);
+        if (subjMatch) {
+          inPromoSection = false;
+          currentSubject = subjMatch[1].trim();
+          continue;
+        }
+
+        // 새 문항 시작 감지
+        const qStartMatch = line.match(/^(\d{1,3})\.\s+(.+)$/);
+        if (qStartMatch) {
+          const qNum = parseInt(qStartMatch[1], 10);
+          const expectedNext = questions.length + 1;
+          if (qNum === expectedNext || (qNum >= 1 && qNum <= 120 && !questions.some(q => q.num === qNum) && line.length > 6)) {
+            inPromoSection = false;
+            if (currentQ) {
+              currentQ.endLineObj = prevLineObjFor(orderedLineObjs, lineObj, currentQ);
+              currentQ.nextStartLineObj = lineObj;
+              questions.push(finalizeParsedQuestion(currentQ, answerMap, columnStreams));
+            }
+            currentQ = {
+              num: qNum,
+              category: currentSubject,
+              rawBody: qStartMatch[2],
+              lineObjs: [{ ...lineObj, text: qStartMatch[2] }],
+              startLineObj: lineObj,
+              endLineObj: lineObj,
+              nextStartLineObj: null,
+              inlineAnswer: null
+            };
+            continue;
+          }
+        }
+
+        if (inPromoSection) {
+          continue;
+        }
+
+        if (currentQ) {
+          const inlineAnsMatch = line.match(/(?:\[?정답\]?\s*[:：]?\s*)([1-4①②③④])/);
+          if (inlineAnsMatch) {
+            currentQ.inlineAnswer = normalizeAnswerToken(inlineAnsMatch[1]);
+          } else {
+            const cleanedLine = stripComcbtBoilerplate(line);
+            if (cleanedLine) {
+              currentQ.rawBody += "\n" + cleanedLine;
+              currentQ.lineObjs.push({ ...lineObj, text: cleanedLine });
+              currentQ.endLineObj = lineObj;
+            }
+          }
+        }
+      }
+
+      if (currentQ) {
+        questions.push(finalizeParsedQuestion(currentQ, answerMap, columnStreams));
+      }
+
+      // 정규식 폴백 (1단 레이아웃 등 예외 케이스)
+      if (questions.length < 5) {
+        const flatText = orderedLineObjs
+          .map(l => stripComcbtBoilerplate(l.text))
+          .filter(Boolean)
+          .join(" ")
+          .replace(/\s+/g, " ");
+        const fallbackQs = parseFlatRegexQuestions(flatText, answerMap);
+        if (fallbackQs.length > questions.length) {
+          return {
+            title: fallbackTitle || "업로드된 CBT 기출문제",
+            questions: fallbackQs,
+            matchedAnswerCount: fallbackQs.filter(q => q.answerMatched).length
+          };
+        }
+      }
+
+      const matchedAnswerCount = questions.filter(q => q.answerMatched).length;
+      return {
+        title: fallbackTitle || "업로드된 CBT 기출문제",
+        questions,
+        matchedAnswerCount
+      };
+    }
+
+    function prevLineObjFor(allLines, nextLineObj, currentQ) {
+      const idx = allLines.indexOf(nextLineObj);
+      if (idx > 0) {
+        return allLines[idx - 1];
+      }
+      return currentQ.endLineObj;
+    }
+
+    // 토큰 배열을 y좌표 기준 행 객체({ text, y, minX, maxX, page, col, colMeta })로 병합
+    function groupTokensIntoLineObjects(tokens, yTolerance = 6, page = null, col = "left", colMeta = null) {
+      if (!tokens.length) return [];
+      const sorted = [...tokens].sort((a, b) => b.y - a.y || a.x - b.x);
+      const rows = [];
+
+      for (const token of sorted) {
+        const lastRow = rows[rows.length - 1];
+        if (lastRow && Math.abs(lastRow.y - token.y) <= yTolerance) {
+          lastRow.items.push(token);
+          lastRow.y = (lastRow.y * (lastRow.items.length - 1) + token.y) / lastRow.items.length;
+        } else {
+          rows.push({ y: token.y, items: [token] });
+        }
+      }
+
+      return rows.map(row => {
+        row.items.sort((a, b) => a.x - b.x);
+        const minX = Math.min(...row.items.map(i => i.x));
+        const maxX = Math.max(...row.items.map(i => i.x + (i.w || 10)));
+        const text = row.items.map(i => i.str).join(" ").replace(/\s+/g, " ").trim();
+        return { text, y: row.y, minX, maxX, page, col, colMeta };
+      });
+    }
+
+    // 호환용 문자열 배열 변환기
+    function groupTokensIntoLines(tokens, yTolerance = 6) {
+      return groupTokensIntoLineObjects(tokens, yTolerance).map(r => r.text);
+    }
+
+    /**
+     * 문항이 시작된 컬럼부터 다음 문항이 시작되기 직전 컬럼까지 걸쳐 있는 모든 (page, col, topY, bottomY) 세그먼트를 산출
+     * - 질문 지문이 우측 하단에 있고 이미지/보기가 다음 페이지 좌측 상단에 위치한 경우 양쪽 구간 모두 포함
+     */
+    function buildQuestionSegments(rawQ, columnStreams) {
+      if (!rawQ.startLineObj || !rawQ.startLineObj.colMeta || !columnStreams || columnStreams.length === 0) {
+        return [];
+      }
+
+      const startMeta = rawQ.startLineObj.colMeta;
+      const endLine = rawQ.endLineObj || rawQ.startLineObj;
+      let endMeta = endLine.colMeta || startMeta;
+
+      // 다음 문항이 현재 끝 줄보다 뒤의 컬럼(예: 우측 하단 질문 후 다음 페이지 좌측 상단 이미지 -> 우측 상단 다음 문항)에 있으면 그 직전 컬럼까지 확장
+      if (rawQ.nextStartLineObj && rawQ.nextStartLineObj.colMeta) {
+        const nextMeta = rawQ.nextStartLineObj.colMeta;
+        if (nextMeta.streamIndex > endMeta.streamIndex) {
+          // 다음 문항이 컬럼 최상단이 아닌 중간에 시작하면 해당 컬럼의 nextStartLineObj 위쪽까지 포함
+          const isNextAtVeryTop = rawQ.nextStartLineObj.y >= nextMeta.bodyTopY - 22;
+          const targetIdx = isNextAtVeryTop ? nextMeta.streamIndex - 1 : nextMeta.streamIndex;
+          if (targetIdx >= startMeta.streamIndex) {
+            endMeta = columnStreams[targetIdx];
+          }
+        }
+      } else {
+        // 마지막 문항(예: 20번)의 경우 바로 다음 컬럼 상단(정답표 이전)에 단독 이미지가 있을 수 있으므로 최대 1컬럼 확인
+        if (endMeta.streamIndex + 1 < columnStreams.length) {
+          const candidateNext = columnStreams[endMeta.streamIndex + 1];
+          const hasAnswerTableHeader = candidateNext.page.tokens.some(t =>
+            /전자문제집\s*CBT|기출문제\s*및\s*해설집/.test(t.str)
+          );
+          if (!hasAnswerTableHeader) {
+            // 해당 컬럼에 다른 문항 번호가 없을 때만 확장
+            const hasAnyQuestionNum = candidateNext.page.tokens.some(t => {
+              const isCol = candidateNext.col === "left" ? t.x < candidateNext.page.width * 0.49 : t.x >= candidateNext.page.width * 0.49;
+              return isCol && /^\d{1,3}\.$/.test(t.str.trim());
+            });
+            if (!hasAnyQuestionNum) {
+              endMeta = candidateNext;
+            }
+          }
+        }
+      }
+
+      const segments = [];
+      for (let sIdx = startMeta.streamIndex; sIdx <= endMeta.streamIndex; sIdx++) {
+        const meta = columnStreams[sIdx];
+        const isFirst = sIdx === startMeta.streamIndex;
+        const isLast = sIdx === endMeta.streamIndex;
+
+        const topY = isFirst ? rawQ.startLineObj.y + 16 : meta.bodyTopY;
+        let bottomY = meta.bodyBottomY;
+
+        if (isLast) {
+          if (rawQ.nextStartLineObj && rawQ.nextStartLineObj.colMeta && rawQ.nextStartLineObj.colMeta.streamIndex === sIdx) {
+            bottomY = rawQ.nextStartLineObj.y + 14;
+          } else if (endLine.colMeta && endLine.colMeta.streamIndex === sIdx) {
+            bottomY = endLine.y - 14;
+          }
+        }
+
+        if (topY - bottomY > 18) {
+          segments.push({
+            streamIndex: sIdx,
+            page: meta.page,
+            col: meta.col,
+            topY,
+            bottomY,
+            isFirst,
+            isLast
+          });
+        }
+      }
+
+      return segments;
+    }
+
+    // 개별 문항 본문에서 문제 지문, 구조적 보기 박스, 그림/도표 이미지(단/페이지 넘김 포함), ①~④ 선택지 분리
+    function finalizeParsedQuestion(rawQ, answerMap, columnStreams = []) {
+      const text = stripComcbtBoilerplate(rawQ.rawBody);
+      const idx1 = text.indexOf("①");
+      const idx2 = text.indexOf("②");
+      const idx3 = text.indexOf("③");
+      const idx4 = text.indexOf("④");
+
+      let questionText = text;
+      let mediaHtml = "";
+      let options = ["보기 ①", "보기 ②", "보기 ③", "보기 ④"];
+
+      // 1. 문항이 걸친 모든 컬럼/페이지 세그먼트 계산 (우측 하단 질문 -> 다음 페이지 좌측 상단 이미지/선택지 대응)
+      const segments = buildQuestionSegments(rawQ, columnStreams);
+      const fullQuestionCropUrls = [];
+      for (const seg of segments) {
+        const url = cropPdfRegion(seg.page, seg.col, seg.topY, seg.bottomY);
+        if (url) fullQuestionCropUrls.push(url);
+      }
+
+      // 2. 문항의 모든 세그먼트에서 그림/도표/4분할 그래프/수식 수직 영역 자동 탐지 (높이 상한 제한 없음)
+      const diagramImages = [];
+      const opt1Line = rawQ.lineObjs ? rawQ.lineObjs.find(l => l.text.includes("①")) : null;
+
+      if (segments.length > 0 && rawQ.lineObjs && rawQ.lineObjs.length > 0) {
+        for (const seg of segments) {
+          // 선택지 ①이 이미 이전 세그먼트에서 시작된 경우 이후 세그먼트는 그림 영역이 아님
+          if (opt1Line && opt1Line.colMeta && opt1Line.colMeta.streamIndex < seg.streamIndex) {
+            continue;
+          }
+
+          const segLines = rawQ.lineObjs.filter(
+            l => l.colMeta && l.colMeta.streamIndex === seg.streamIndex
+          );
+
+          // 다이어그램 스캔 상단(diagTopY) 결정
+          let diagTopY = seg.topY;
+          if (seg.isFirst) {
+            // 첫 세그먼트에서는 질문 지문이 끝나는 줄 바로 아래부터 스캔 시작
+            let stemEndLine = segLines[0] || rawQ.startLineObj;
+            for (let i = 0; i < segLines.length; i++) {
+              const l = segLines[i];
+              if (l.text.includes("①")) break;
+              if (/[?:>]$/.test(l.text) || l.text.length >= 16) {
+                stemEndLine = l;
+                if (/[?:>]$/.test(l.text)) break;
+              }
+            }
+            diagTopY = stemEndLine.y - 8;
+          } else {
+            // 다음 컬럼/페이지로 넘어간 세그먼트는 컬럼 최상단(헤더 바로 아래)부터 스캔 시작
+            diagTopY = seg.topY;
+          }
+
+          // 다이어그램 스캔 하단(diagBottomY) 결정
+          let diagBottomY = seg.bottomY;
+          if (opt1Line && opt1Line.colMeta && opt1Line.colMeta.streamIndex === seg.streamIndex) {
+            // 선택지 ①이 이 세그먼트에 있으면 ① 바로 위까지 스캔
+            diagBottomY = opt1Line.y + 10;
+          } else if (seg.isLast && rawQ.nextStartLineObj && rawQ.nextStartLineObj.colMeta && rawQ.nextStartLineObj.colMeta.streamIndex === seg.streamIndex) {
+            // 다음 문항이 같은 컬럼에 있으면 다음 문항 시작 바로 위까지 스캔
+            diagBottomY = rawQ.nextStartLineObj.y + 14;
+          } else {
+            // 그림이 컬럼 바닥까지 이어지고 선택지 ①이 다음 컬럼/페이지에 있는 경우 컬럼 하단 끝까지 스캔
+            diagBottomY = seg.page.height ? 32 : seg.bottomY;
+          }
+
+          const spanHeight = diagTopY - diagBottomY;
+          if (spanHeight >= 26) {
+            // 같은 세그먼트 내 텍스트 줄 간 최대 수직 공백도 함께 확인
+            let maxGap = 0;
+            for (let i = 0; i < segLines.length - 1; i++) {
+              if (segLines[i].text.includes("①")) break;
+              const gap = segLines[i].y - segLines[i + 1].y;
+              if (gap > maxGap) maxGap = gap;
+            }
+
+            // 세그먼트에 텍스트 줄이 거의 없거나(이미지 전용 상단 영역), 줄 간격/스팬이 충분할 때 잉크 바운딩 박스 검출
+            const isCrossColumnVisualSpan = !seg.isFirst || !opt1Line || (opt1Line.colMeta && opt1Line.colMeta.streamIndex > seg.streamIndex);
+            const minGapThreshold = seg.page.hasGraphicOps ? 20 : 28;
+
+            if (isCrossColumnVisualSpan || maxGap >= minGapThreshold || seg.page.hasGraphicOps) {
+              const inspection = analyzeMediaRegionInk(seg.page, seg.col, diagTopY, diagBottomY);
+              if (inspection.hasVisualContent && inspection.dataUrl) {
+                diagramImages.push(inspection.dataUrl);
+              }
+            }
+          }
+        }
+      }
+
+      const hasAutoImage = diagramImages.length > 0;
+
+      if (idx1 !== -1 && idx2 > idx1 && idx3 > idx2 && idx4 > idx3) {
+        const beforeOptions = text.slice(0, idx1).trim();
+        const lines = beforeOptions.split("\n").map(l => l.trim()).filter(Boolean);
+
+        if (lines.length > 1) {
+          // 첫 줄(또는 물음표/콜론으로 끝나는 질문 문장)과 나머지 줄 분리
+          let splitIdx = 1;
+          for (let i = 0; i < lines.length - 1; i++) {
+            if (/[?:>]$/.test(lines[i])) {
+              splitIdx = i + 1;
+              break;
+            }
+          }
+          const stemLines = lines.slice(0, splitIdx);
+          const restLines = lines.slice(splitIdx);
+
+          if (restLines.length > 0 && isExplicitBoxContent(restLines)) {
+            questionText = joinWrappedProseLines(stemLines);
+            // 이미 고해상도 그림/도표 이미지가 자동 추출된 경우 중복 텍스트 박스는 생략
+            if (!hasAutoImage) {
+              const boxContent = restLines.join("\n");
+              mediaHtml += `<div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm whitespace-pre-line leading-relaxed text-slate-800">${escapeHtml(boxContent)}</div>`;
+            }
+          } else {
+            // 단순 줄바꿈으로 나뉜 문장은 네모 박스에 넣지 않고 자연스러운 본문으로 연결
+            questionText = joinWrappedProseLines(lines);
+          }
+        } else {
+          questionText = beforeOptions;
+        }
+
+        options = [
+          stripComcbtBoilerplate(text.slice(idx1 + 1, idx2).replace(/\n/g, " ")),
+          stripComcbtBoilerplate(text.slice(idx2 + 1, idx3).replace(/\n/g, " ")),
+          stripComcbtBoilerplate(text.slice(idx3 + 1, idx4).replace(/\n/g, " ")),
+          stripComcbtBoilerplate(text.slice(idx4 + 1).replace(/\n/g, " "))
+        ];
+      } else {
+        // 원문자 ①~④ 대신 1) 2) 3) 4) 형식인 경우 보조 처리
+        const altMatch = text.match(/([\s\S]+?)\s*1\)\s*([\s\S]+?)\s*2\)\s*([\s\S]+?)\s*3\)\s*([\s\S]+?)\s*4\)\s*([\s\S]+)/);
+        if (altMatch) {
+          questionText = joinWrappedProseLines(altMatch[1].split("\n"));
+          options = [
+            stripComcbtBoilerplate(altMatch[2].replace(/\n/g, " ")),
+            stripComcbtBoilerplate(altMatch[3].replace(/\n/g, " ")),
+            stripComcbtBoilerplate(altMatch[4].replace(/\n/g, " ")),
+            stripComcbtBoilerplate(altMatch[5].replace(/\n/g, " "))
+          ];
+        } else {
+          questionText = joinWrappedProseLines(text.split("\n"));
+        }
+      }
+
+      // 자동 추출된 그림/도표/수식 이미지가 있으면 높이 제한 없이 순차적으로 전체 원본 비율 그대로 표시
+      if (hasAutoImage) {
+        const imgsMarkup = diagramImages
+          .map(
+            (imgUrl, i) =>
+              `<img src="${imgUrl}" alt="${rawQ.num}번 문항 그림 및 도표 ${i + 1}" class="max-w-full w-auto h-auto max-h-none rounded-lg bg-white border border-slate-100 shadow-2xs" />`
+          )
+          .join("");
+        mediaHtml += `
+          <div class="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col items-center gap-3">
+            ${imgsMarkup}
+          </div>
+        `;
+      }
+
+      const mappedAns = rawQ.inlineAnswer || answerMap.get(rawQ.num) || null;
+      const finalAns = mappedAns || 1;
+      const answerMatched = mappedAns !== null;
+
+      return {
+        num: rawQ.num,
+        category: rawQ.category,
+        question: questionText,
+        mediaHtml,
+        diagramImages,
+        hasAutoImage,
+        fullQuestionCropUrl: fullQuestionCropUrls[0] || null,
+        fullQuestionCropUrls,
+        options,
+        answer: finalAns,
+        answerMatched,
+        explanation: answerMatched
+          ? `정답표 기준 정답은 ${CIRCLED_NUMS[finalAns - 1]}번입니다.`
+          : `정답표에서 자동 매칭되지 않아 기본값(①)이 표시됩니다. 상단 [정답표 확인/수정]에서 정답을 지정할 수 있습니다.`
+      };
+    }
+
+    /**
+     * 2D 좌표 기반 정답표 추출기
+     * - 마지막 1~2페이지의 표(Grid)에서 문제 번호 행(1~10, 11~20 등)과 바로 아래 정답 행(1~4, ①~④ 또는 "4212132331" 문자열)을 x좌표 근접도로 매칭
+     */
+    function extractAnswerKeyFrom2D(pagesData) {
+      const answerMap = new Map();
+      // 정답표는 주로 마지막 페이지(또는 마지막 2페이지)에 위치
+      const candidatePages = pagesData.slice(-2).reverse();
+
+      for (const page of candidatePages) {
+        // y좌표 기준 행 클러스터링 (허용 오차 7pt)
+        const sorted = [...page.tokens].sort((a, b) => b.y - a.y || a.x - b.x);
+        const rows = [];
+
+        for (const t of sorted) {
+          const last = rows[rows.length - 1];
+          if (last && Math.abs(last.y - t.y) <= 7) {
+            last.tokens.push(t);
+          } else {
+            rows.push({ y: t.y, tokens: [t] });
+          }
+        }
+
+        rows.forEach(r => r.tokens.sort((a, b) => a.x - b.x));
+
+        // 각 행에서 문항 번호 토큰(1~100 정수) 추출
+        for (let rIdx = 0; rIdx < rows.length - 1; rIdx++) {
+          const headerRow = rows[rIdx];
+          const qNumTokens = [];
+
+          for (const tok of headerRow.tokens) {
+            // 한 토큰에 여러 숫자가 붙어있는 경우 분리 (예: "1 2 3 4 5")
+            const parts = tok.str.split(/\s+/);
+            if (parts.length > 1 && parts.every(p => /^\d{1,3}$/.test(p))) {
+              const stepW = (tok.w || parts.length * 18) / parts.length;
+              parts.forEach((p, i) => {
+                const n = parseInt(p, 10);
+                if (n >= 1 && n <= 120) {
+                  qNumTokens.push({ num: n, x: tok.x + i * stepW });
+                }
+              });
+            } else if (/^\d{1,3}$/.test(tok.str)) {
+              const n = parseInt(tok.str, 10);
+              if (n >= 1 && n <= 120) {
+                qNumTokens.push({ num: n, x: tok.x });
+              }
+            }
+          }
+
+          // 한 행에 최소 4개 이상의 문항 번호가 발견되면 정답표의 "문제번호 행"으로 간주
+          if (qNumTokens.length < 4) continue;
+
+          // 바로 아래 행(또는 y거리 45pt 이내 다음 행)에서 정답 토큰 수집
+          const answerRow = rows[rIdx + 1];
+          if (!answerRow || Math.abs(headerRow.y - answerRow.y) > 55) continue;
+
+          const ansTokens = [];
+          for (const tok of answerRow.tokens) {
+            const cleanStr = tok.str.replace(/\s+/g, "");
+            // 케이스 A: "4212132331" 처럼 1~4 숫자가 연속 문자열로 붙어 있는 경우
+            if (/^[1-4①②③④]{4,20}$/.test(cleanStr)) {
+              const chars = [...cleanStr];
+              const stepW = (tok.w || chars.length * 14) / chars.length;
+              chars.forEach((ch, idx) => {
+                const val = normalizeAnswerToken(ch);
+                if (val) ansTokens.push({ val, x: tok.x + idx * stepW });
+              });
+            } else {
+              // 케이스 B: 공백 분리 또는 단일 정답 토큰 ("4", "②", "4 2 1 2")
+              const parts = tok.str.split(/\s+/);
+              const stepW = (tok.w || parts.length * 16) / parts.length;
+              parts.forEach((p, idx) => {
+                const val = normalizeAnswerToken(p);
+                if (val) ansTokens.push({ val, x: tok.x + idx * stepW });
+              });
+            }
+          }
+
+          if (ansTokens.length === 0) continue;
+
+          // 문항 번호 개수와 정답 토큰 개수가 정확히 일치하면 순서대로 1:1 매핑 (가장 정확)
+          if (qNumTokens.length === ansTokens.length) {
+            qNumTokens.forEach((qTok, i) => {
+              if (!answerMap.has(qTok.num)) {
+                answerMap.set(qTok.num, ansTokens[i].val);
+              }
+            });
+          } else {
+            // 개수가 다를 경우(일부 셀 병합/누락) x좌표가 가장 가까운 정답 토큰과 매칭
+            for (const qTok of qNumTokens) {
+              let bestAns = null;
+              let minDist = Infinity;
+              for (const aTok of ansTokens) {
+                const dist = Math.abs(qTok.x - aTok.x);
+                if (dist < minDist && dist < 45) {
+                  minDist = dist;
+                  bestAns = aTok.val;
+                }
+              }
+              if (bestAns !== null && !answerMap.has(qTok.num)) {
+                answerMap.set(qTok.num, bestAns);
+              }
+            }
+          }
+        }
+
+        if (answerMap.size >= 10) break;
+      }
+
+      // 보조 폴백: 텍스트 내 연속된 1~4 숫자열(예: 10자리씩 2줄 = 20문항, 20자리씩 5줄 = 100문항) 탐지
+      if (answerMap.size < 5) {
+        const lastPage = pagesData[pagesData.length - 1];
+        if (lastPage) {
+          const sortedText = groupTokensIntoLines(lastPage.tokens, 6).join(" ");
+          const seqMatches = sortedText.match(/(?:[1-4①②③④]\s*){10,20}/g);
+          if (seqMatches) {
+            let seqNum = 1;
+            for (const chunk of seqMatches) {
+              for (const ch of chunk) {
+                const val = normalizeAnswerToken(ch);
+                if (val && !answerMap.has(seqNum)) {
+                  answerMap.set(seqNum++, val);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      return answerMap;
+    }
+
+    function normalizeAnswerToken(token) {
+      const map = { "①": 1, "②": 2, "③": 3, "④": 4, "1": 1, "2": 2, "3": 3, "4": 4 };
+      return map[token.trim()] || null;
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    /**
+     * 단순 줄바꿈으로 나뉜 한국어/영문 지문 줄들을 자연스러운 한 문장으로 병합
+     */
+    function joinWrappedProseLines(lines) {
+      const cleaned = lines.map(l => l.trim()).filter(Boolean);
+      if (cleaned.length === 0) return "";
+      if (cleaned.length === 1) return cleaned[0];
+
+      let merged = cleaned[0];
+      for (let i = 1; i < cleaned.length; i++) {
+        const next = cleaned[i];
+        // 앞 줄 끝이 하이픈이거나 조사/어미가 중간에 잘린 경우 공백 없이 붙이고, 그 외엔 공백 1칸 삽입
+        if (merged.endsWith("-")) {
+          merged = merged.slice(0, -1) + next;
+        } else if (/^[은는이가을를의에와과도만로으로이며고서]$/.test(next[0]) && next.length <= 4) {
+          merged += next;
+        } else {
+          merged += " " + next;
+        }
+      }
+      return merged.replace(/\s+/g, " ").trim();
+    }
+
+    /**
+     * 네모 박스(<보기>, ㄱ/ㄴ/ㄷ 나열, 코드, 표 등)로 감싸야 하는 명확한 구조적 본문인지 판별
+     */
+    function isExplicitBoxContent(lines) {
+      if (!lines || lines.length === 0) return false;
+      const joined = lines.join("\n");
+
+      // 1. <보기> / [보기] 헤더가 포함된 경우
+      if (/^[<\[【]?\s*보\s*기\s*[>\]】]?/.test(lines[0])) return true;
+
+      // 2. ㄱ. ㄴ. ㄷ. ㄹ. 항목이 2개 이상 나열된 경우
+      const ganadaCount = lines.filter(l => /^[ㄱ-ㅎ]\s*[\.．\)]/.test(l)).length;
+      if (ganadaCount >= 2) return true;
+
+      // 3. 프로그래밍 코드/SQL 패턴이 감지된 경우
+      if (/(#include|int\s+main|printf\s*\(|def\s+\w+|print\s*\(|public\s+static|SELECT\s+.+\s+FROM|CREATE\s+TABLE|\{\s*$|\}\s*$|;\s*$)/m.test(joined)) {
+        return true;
+      }
+
+      // 4. 표 구분자(|)가 여러 줄에 걸쳐 존재하는 경우
+      if (lines.filter(l => l.includes("|")).length >= 2) return true;
+
+      return false;
+    }
+
+    /**
+     * PDF 페이지의 특정 컬럼(left/right) 및 PDF y좌표 구간(topY ~ bottomY)을 이미지 DataURL로 크롭
+     */
+    function cropPdfRegion(page, col, pdfTopY, pdfBottomY) {
+      if (!page || !page.canvas) return null;
+      const scale = page.scale || 2.0;
+      const midX = page.width * 0.49;
+
+      const xStartPdf = col === "left" ? 18 : midX + 4;
+      const xEndPdf = col === "left" ? midX - 4 : page.width - 18;
+
+      const clampedTop = Math.min(page.height - 10, Math.max(10, pdfTopY));
+      const clampedBottom = Math.min(page.height - 10, Math.max(10, pdfBottomY));
+      if (clampedTop - clampedBottom < 12) return null;
+
+      // PDF 좌표계(좌하단 원점) -> Canvas 픽셀 좌표계(좌상단 원점) 변환
+      const sx = Math.max(0, Math.floor(xStartPdf * scale));
+      const sw = Math.min(page.canvas.width - sx, Math.floor((xEndPdf - xStartPdf) * scale));
+      const sy = Math.max(0, Math.floor((page.height - clampedTop) * scale));
+      const sh = Math.min(page.canvas.height - sy, Math.floor((clampedTop - clampedBottom) * scale));
+
+      if (sw <= 10 || sh <= 10) return null;
+
+      const outCanvas = document.createElement("canvas");
+      outCanvas.width = sw;
+      outCanvas.height = sh;
+      const outCtx = outCanvas.getContext("2d");
+      outCtx.fillStyle = "#ffffff";
+      outCtx.fillRect(0, 0, sw, sh);
+      outCtx.drawImage(page.canvas, sx, sy, sw, sh, 0, 0, sw, sh);
+      return outCanvas.toDataURL("image/png");
+    }
+
+    /**
+     * 문항 내 다이어그램/그림/4분할 그래프 구간의 실제 비백색(잉크) 픽셀 바운딩 박스를 탐지하여 타이트하게 크롭
+     */
+    function analyzeMediaRegionInk(page, col, pdfTopY, pdfBottomY) {
+      const emptyResult = { hasVisualContent: false, dataUrl: null };
+      if (!page || !page.canvas) return emptyResult;
+
+      const scale = page.scale || 2.0;
+      const midX = page.width * 0.49;
+      const xStartPdf = col === "left" ? 22 : midX + 6;
+      const xEndPdf = col === "left" ? midX - 6 : page.width - 22;
+
+      const clampedTop = Math.min(page.height - 15, Math.max(15, pdfTopY));
+      const clampedBottom = Math.min(page.height - 15, Math.max(15, pdfBottomY));
+      if (clampedTop - clampedBottom < 24) return emptyResult;
+
+      const sx = Math.max(0, Math.floor(xStartPdf * scale));
+      const sw = Math.min(page.canvas.width - sx, Math.floor((xEndPdf - xStartPdf) * scale));
+      const sy = Math.max(0, Math.floor((page.height - clampedTop) * scale));
+      const sh = Math.min(page.canvas.height - sy, Math.floor((clampedTop - clampedBottom) * scale));
+
+      if (sw <= 20 || sh <= 20) return emptyResult;
+
+      try {
+        const ctx = page.canvas.getContext("2d");
+        const imgData = ctx.getImageData(sx, sy, sw, sh).data;
+
+        let minInkY = sh;
+        let maxInkY = -1;
+        let minInkX = sw;
+        let maxInkX = -1;
+        let inkPixels = 0;
+
+        for (let y = 0; y < sh; y++) {
+          for (let x = 0; x < sw; x++) {
+            const idx = (y * sw + x) * 4;
+            const r = imgData[idx];
+            const g = imgData[idx + 1];
+            const b = imgData[idx + 2];
+            // 흰색 배경이 아닌 픽셀(선, 도형, 텍스트 라벨, 음영 등) 감지
+            if (r < 235 || g < 235 || b < 235) {
+              inkPixels++;
+              if (y < minInkY) minInkY = y;
+              if (y > maxInkY) maxInkY = y;
+              if (x < minInkX) minInkX = x;
+              if (x > maxInkX) maxInkX = x;
+            }
+          }
+        }
+
+        const inkHeight = maxInkY - minInkY;
+        const inkWidth = maxInkX - minInkX;
+        const totalPixels = sw * sh;
+        const inkRatio = inkPixels / totalPixels;
+
+        // 최소 크기 및 잉크 밀도 검증 (단순 점이나 빈 공백 제외)
+        if (maxInkY <= minInkY || inkHeight < 28 || inkWidth < 30 || inkRatio < 0.004) {
+          return emptyResult;
+        }
+
+        // 상하좌우 여유 패딩을 더해 타이트하게 크롭
+        const pad = 10;
+        const cropX = Math.max(0, sx + minInkX - pad);
+        const cropY = Math.max(0, sy + minInkY - pad);
+        const cropW = Math.min(page.canvas.width - cropX, inkWidth + pad * 2);
+        const cropH = Math.min(page.canvas.height - cropY, inkHeight + pad * 2);
+
+        const outCanvas = document.createElement("canvas");
+        outCanvas.width = cropW;
+        outCanvas.height = cropH;
+        const outCtx = outCanvas.getContext("2d");
+        outCtx.fillStyle = "#ffffff";
+        outCtx.fillRect(0, 0, cropW, cropH);
+        outCtx.drawImage(page.canvas, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+
+        return {
+          hasVisualContent: true,
+          dataUrl: outCanvas.toDataURL("image/png")
+        };
+      } catch (err) {
+        console.warn("이미지 바운딩 박스 분석 오류:", err);
+        return emptyResult;
+      }
+    }
+
+    // 1단 레이아웃 등 예외 케이스용 정규식 폴백 파서
+    function parseFlatRegexQuestions(cleaned, answerMap) {
+      const questions = [];
+      const qRegex = /(?:^|\s)(\d{1,3})\.\s+(.+?)\s*①\s*(.+?)\s*②\s*(.+?)\s*③\s*(.+?)\s*④\s*(.+?)(?=\s+\d{1,3}\.\s+|\s+전자문제집\s+CBT|$)/g;
+      let match;
+      while ((match = qRegex.exec(cleaned)) !== null) {
+        const num = parseInt(match[1], 10);
+        if (num >= 1 && num <= 120 && !questions.some(item => item.num === num)) {
+          const mappedAns = answerMap.get(num) || null;
+          const finalAns = mappedAns || 1;
+          questions.push({
+            num,
+            category: "PDF 추출 문항",
+            question: match[2].trim(),
+            mediaHtml: "",
+            options: [
+              match[3].trim(),
+              match[4].trim(),
+              match[5].trim(),
+              match[6].trim()
+            ],
+            answer: finalAns,
+            answerMatched: mappedAns !== null,
+            explanation: mappedAns
+              ? `정답표 기준 정답은 ${CIRCLED_NUMS[finalAns - 1]}번입니다.`
+              : `정답표에서 자동 매칭되지 않았습니다. 상단 [정답표 확인/수정]에서 입력해주세요.`
+          });
+        }
+      }
+      return questions;
+    }
+
+    // 초기 렌더링 실행
+    window.addEventListener("DOMContentLoaded", () => {
+      renderQuestion();
+    });
+  </script>
+</body>
+</html>
