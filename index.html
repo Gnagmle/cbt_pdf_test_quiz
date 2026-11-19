@@ -2,15 +2,15 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2025년 6월 21일 9급 지방직 공무원 컴퓨터일반 CBT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>9급 지방직 공무원 컴퓨터일반 CBT (PC·모바일 동기화)</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Pretendard & JetBrains Mono -->
+  <!-- Google Fonts: Noto Sans KR, Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <!-- PDF.js for optional external PDF upload -->
+  <!-- PDF.js for external PDF upload & 2D coordinate/image parsing -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     tailwind.config = {
@@ -29,6 +29,7 @@
       font-family: 'Noto Sans KR', 'Inter', sans-serif;
       background-color: #f1f5f9;
       color: #0f172a;
+      -webkit-tap-highlight-color: transparent;
     }
     .code-font {
       font-family: 'JetBrains Mono', monospace;
@@ -44,52 +45,101 @@
       }
     }
     .animate-fade-in {
-      animation: fadeSlideIn 0.25s ease-out forwards;
+      animation: fadeSlideIn 0.22s ease-out forwards;
+    }
+    /* 모바일 안전 영역 하단 패딩 */
+    .pb-safe {
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.65rem);
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-indigo-100 selection:text-indigo-900">
+<body class="min-h-screen flex flex-col justify-between selection:bg-indigo-100 selection:text-indigo-900 pb-20 sm:pb-0">
 
   <!-- 상단 헤더 바 -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm shrink-0">
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-5xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5">
+      <div class="flex items-center gap-2.5 min-w-0 flex-1">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-base sm:text-lg shadow-xs shrink-0">
           CBT
         </div>
-        <div>
-          <h1 id="exam-title" class="text-base sm:text-lg font-bold text-slate-900 leading-tight">
-            9급 지방직 공무원 컴퓨터일반 (2025.06.21)
-          </h1>
-          <p id="exam-subtitle" class="text-xs text-slate-500">
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2">
+            <h1 id="exam-title" class="text-sm sm:text-lg font-bold text-slate-900 leading-tight truncate">
+              9급 지방직 공무원 컴퓨터일반 (2025.06.21)
+            </h1>
+            <span id="sync-status-pill" class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-500 shrink-0">
+              로컬 저장됨
+            </span>
+          </div>
+          <p id="exam-subtitle" class="text-[11px] sm:text-xs text-slate-500 truncate">
             전자문제집 CBT 기출문제 실전 연습 · 총 20문항
           </p>
         </div>
       </div>
 
-      <!-- 우측 컨트롤 버튼 (PDF 파일 불러오기 & 문제 목록 토글) -->
-      <div class="flex items-center gap-2">
-        <button id="open-answer-modal-btn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium bg-amber-50 hover:bg-amber-100 text-amber-800 transition border border-amber-200">
-          <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      <!-- 우측 컨트롤 버튼 그룹 -->
+      <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+        <!-- 클라우드 동기화 (GitHub Gist) 버튼 -->
+        <button id="open-sync-modal-btn" type="button" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-sky-50 hover:bg-sky-100 text-sky-800 transition border border-sky-200" title="PC·휴대폰 기기 간 GitHub Gist 동기화">
+          <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
           </svg>
-          <span>정답표 확인/수정</span>
+          <span class="hidden md:inline">클라우드 동기화</span>
+          <span class="md:hidden">동기화</span>
         </button>
 
-        <label for="pdf-upload" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200">
-          <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <!-- 정답표 확인/수정 버튼 -->
+        <button id="open-answer-modal-btn" type="button" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-medium bg-amber-50 hover:bg-amber-100 text-amber-800 transition border border-amber-200">
+          <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          <span class="hidden sm:inline">정답표 확인/수정</span>
+          <span class="sm:hidden">정답표</span>
+        </button>
+
+        <!-- PDF 불러오기 버튼 -->
+        <label for="pdf-upload" class="cursor-pointer inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200">
+          <svg class="w-4 h-4 text-indigo-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
           </svg>
-          <span>PDF 불러오기</span>
+          <span class="hidden sm:inline">PDF 불러오기</span>
+          <span class="sm:hidden">PDF</span>
           <input id="pdf-upload" type="file" accept="application/pdf" class="hidden" />
         </label>
 
-        <button id="toggle-omr-btn" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition border border-indigo-200">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <!-- 문항 현황 (OMR) 토글 버튼 -->
+        <button id="toggle-omr-btn" type="button" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-medium bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition border border-indigo-200">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7" />
           </svg>
-          <span>문항 현황</span>
+          <span class="hidden sm:inline">문항 현황</span>
+          <span class="sm:hidden">목록</span>
         </button>
+      </div>
+    </div>
+
+    <!-- 저장된 시험 회차 선택 & JSON 백업 툴바 -->
+    <div class="bg-slate-50/90 border-t border-slate-200/80">
+      <div class="max-w-5xl mx-auto px-3 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <label for="exam-switcher" class="font-bold text-slate-600 shrink-0">시험 선택:</label>
+          <select id="exam-switcher" class="max-w-xs sm:max-w-md w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-indigo-500 truncate">
+            <option value="default_20250621">9급 지방직 공무원 컴퓨터일반 (2025.06.21)</option>
+          </select>
+          <button id="delete-exam-btn" type="button" class="hidden px-2 py-1.5 rounded-lg text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 font-semibold shrink-0 transition" title="현재 선택한 업로드 시험 삭제">
+            삭제
+          </button>
+        </div>
+
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="export-json-btn" type="button" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 font-medium transition">
+            JSON 내보내기
+          </button>
+          <label for="import-json-input" class="cursor-pointer px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 font-medium transition">
+            JSON 가져오기
+            <input id="import-json-input" type="file" accept="application/json,.json" class="hidden" />
+          </label>
+        </div>
       </div>
     </div>
 
@@ -100,42 +150,42 @@
   </header>
 
   <!-- 안내 메시지 배너 (alert 대체용) -->
-  <div id="toast-banner" class="hidden max-w-4xl mx-auto w-full px-4 pt-3">
-    <div id="toast-content" class="rounded-xl px-4 py-3 text-sm font-medium flex items-center justify-between shadow-sm border"></div>
+  <div id="toast-banner" class="hidden max-w-4xl mx-auto w-full px-3 sm:px-4 pt-3">
+    <div id="toast-content" class="rounded-xl px-4 py-3 text-xs sm:text-sm font-medium flex items-center justify-between shadow-xs border"></div>
   </div>
 
   <!-- 메인 컨테이너 -->
-  <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+  <main class="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-8">
 
     <!-- 다과목 선택 탭 (100문항 5과목 PDF 업로드 시 표시) -->
     <div id="subject-tabs" class="hidden mb-4 flex flex-wrap gap-2"></div>
 
     <!-- OMR / 문항 바로가기 드로어 패널 -->
-    <section id="omr-panel" class="hidden mb-6 bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm animate-fade-in">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-sm font-bold text-slate-800">전체 문항 빠른 이동 (클릭하여 이동)</h2>
+    <section id="omr-panel" class="hidden mb-5 bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs animate-fade-in">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <h2 class="text-sm font-bold text-slate-800">전체 문항 빠른 이동 (터치/클릭하여 이동)</h2>
         <div class="flex items-center gap-3 text-xs text-slate-500">
           <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>정답</span>
           <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>오답</span>
           <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-200 inline-block"></span>미풀이</span>
         </div>
       </div>
-      <div id="omr-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2"></div>
+      <div id="omr-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2 max-h-64 overflow-y-auto p-0.5"></div>
     </section>
 
-    <!-- 퀴즈 카드 영역 -->
-    <div id="quiz-container" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden animate-fade-in">
+    <!-- 퀴즈 카드 영역 (모바일 좌우 스와이프 제스처 지원) -->
+    <div id="quiz-container" class="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden animate-fade-in">
       <!-- 상단 상태 표시줄 -->
-      <div class="bg-slate-50 px-5 sm:px-7 py-3.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-2.5">
-          <span id="question-badge" class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs sm:text-sm font-bold">
+      <div class="bg-slate-50 px-4 sm:px-7 py-3 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span id="question-badge" class="px-2.5 sm:px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs sm:text-sm font-bold">
             문제 1 / 20
           </span>
-          <span id="question-category" class="text-xs font-medium text-slate-500 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
+          <span id="question-category" class="text-xs font-medium text-slate-500 bg-white px-2.5 py-1 rounded-lg border border-slate-200 truncate max-w-[160px] sm:max-w-none">
             데이터베이스
           </span>
         </div>
-        <div class="flex items-center gap-3 text-xs sm:text-sm font-semibold">
+        <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold">
           <span class="text-emerald-600">정답: <span id="correct-count">0</span></span>
           <span class="text-slate-300">|</span>
           <span class="text-rose-600">오답: <span id="wrong-count">0</span></span>
@@ -143,12 +193,12 @@
       </div>
 
       <!-- 문제 본문 및 시각 자료 -->
-      <div class="p-5 sm:p-8">
-        <div class="flex items-start justify-between gap-3 mb-5">
+      <div class="p-4 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5 mb-5">
           <h2 id="question-text" class="text-base sm:text-lg font-bold text-slate-900 leading-relaxed flex-1">
             <!-- 문제 텍스트가 여기에 렌더링됩니다 -->
           </h2>
-          <button id="toggle-pdf-crop-btn" type="button" class="hidden shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 border border-slate-200 hover:border-indigo-200 transition">
+          <button id="toggle-pdf-crop-btn" type="button" class="hidden self-start shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 border border-slate-200 hover:border-indigo-200 transition">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
@@ -165,32 +215,32 @@
         <!-- 보기 박스 / 표 / 코드 / SVG 다이어그램 / 자동 감지 이미지 영역 -->
         <div id="question-media" class="mb-6 empty:hidden"></div>
 
-        <!-- 선택지 리스트 (① ~ ④) -->
+        <!-- 선택지 리스트 (① ~ ④, 모바일 터치 타겟 확대) -->
         <div id="options-list" class="space-y-3"></div>
 
         <!-- 정답 판정 및 해설 박스 (선택 후 표시) -->
         <div id="feedback-box" class="hidden mt-6 rounded-2xl p-4 sm:p-5 border animate-fade-in">
           <div class="flex items-start gap-3">
             <div id="feedback-icon" class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 font-bold text-white"></div>
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
               <h3 id="feedback-title" class="font-bold text-base mb-1"></h3>
-              <p id="feedback-explanation" class="text-sm leading-relaxed text-slate-700"></p>
+              <p id="feedback-explanation" class="text-sm leading-relaxed text-slate-700 whitespace-pre-line"></p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 하단 네비게이션 버튼 -->
-      <div class="bg-slate-50 px-5 sm:px-8 py-4 border-t border-slate-200 flex items-center justify-between gap-3">
+      <!-- 데스크톱 하단 네비게이션 버튼 -->
+      <div class="hidden sm:flex bg-slate-50 px-8 py-4 border-t border-slate-200 items-center justify-between gap-3">
         <button id="prev-btn" type="button" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-white border border-slate-300 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition">
           ← 이전 문제
         </button>
 
-        <div class="hidden sm:block text-xs text-slate-400">
+        <div class="text-xs text-slate-400">
           단축키: <kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600">1~4</kbd> 정답 선택 · <kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600">Enter</kbd> 다음 문제
         </div>
 
-        <button id="next-btn" type="button" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition flex items-center gap-1.5">
+        <button id="next-btn" type="button" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs transition flex items-center gap-1.5">
           <span id="next-btn-text">다음 문제</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
@@ -200,38 +250,38 @@
     </div>
 
     <!-- 최종 결과 요약 화면 -->
-    <div id="result-container" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-10 animate-fade-in">
+    <div id="result-container" class="hidden bg-white rounded-2xl shadow-xs border border-slate-200 p-5 sm:p-10 animate-fade-in">
       <div class="text-center max-w-lg mx-auto mb-8">
         <div id="result-badge" class="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold mb-3"></div>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">시험 결과 리포트</h2>
         <p id="result-exam-name" class="text-sm text-slate-500 mb-6">9급 지방직 공무원 컴퓨터일반 (2025.06.21)</p>
 
-        <!-- 점수 원형/카드 요약 -->
-        <div class="grid grid-cols-3 gap-3 sm:gap-4 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200">
-          <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-            <div class="text-xs text-slate-500 mb-1">총점 (100점 만점)</div>
-            <div id="final-score" class="text-2xl sm:text-3xl font-extrabold text-indigo-600">0점</div>
+        <!-- 점수 카드 요약 -->
+        <div class="grid grid-cols-3 gap-2.5 sm:gap-4 bg-slate-50 p-3.5 sm:p-5 rounded-2xl border border-slate-200">
+          <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-2xs">
+            <div class="text-[11px] sm:text-xs text-slate-500 mb-1">총점 (100점)</div>
+            <div id="final-score" class="text-xl sm:text-3xl font-extrabold text-indigo-600">0점</div>
           </div>
-          <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-            <div class="text-xs text-slate-500 mb-1">정답 문항</div>
-            <div id="final-correct" class="text-2xl sm:text-3xl font-extrabold text-emerald-600">0개</div>
+          <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-2xs">
+            <div class="text-[11px] sm:text-xs text-slate-500 mb-1">정답 문항</div>
+            <div id="final-correct" class="text-xl sm:text-3xl font-extrabold text-emerald-600">0개</div>
           </div>
-          <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-            <div class="text-xs text-slate-500 mb-1">오답 문항</div>
-            <div id="final-wrong" class="text-2xl sm:text-3xl font-extrabold text-rose-600">0개</div>
+          <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-2xs">
+            <div class="text-[11px] sm:text-xs text-slate-500 mb-1">오답 문항</div>
+            <div id="final-wrong" class="text-xl sm:text-3xl font-extrabold text-rose-600">0개</div>
           </div>
         </div>
       </div>
 
       <!-- 오답 노트 영역 -->
       <div class="border-t border-slate-200 pt-6">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
           <h3 class="text-base sm:text-lg font-bold text-slate-900">오답 및 전체 문항 복습</h3>
           <div class="flex gap-2">
-            <button id="filter-wrong-btn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition">
+            <button id="filter-wrong-btn" type="button" class="px-3 py-2 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition">
               틀린 문제만 보기
             </button>
-            <button id="filter-all-btn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 transition">
+            <button id="filter-all-btn" type="button" class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 transition">
               전체 보기
             </button>
           </div>
@@ -241,37 +291,52 @@
 
       <!-- 다시 풀기 버튼 -->
       <div class="mt-8 pt-6 border-t border-slate-200 flex flex-wrap justify-center gap-3">
-        <button id="restart-btn" type="button" class="px-6 py-3 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition">
-          처음부터 다시 풀기
+        <button id="restart-btn" type="button" class="px-6 py-3 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs transition">
+          현재 시험 처음부터 다시 풀기
         </button>
       </div>
     </div>
 
   </main>
 
+  <!-- 모바일 전용 하단 고정 내비게이션 바 -->
+  <nav id="mobile-bottom-bar" class="sm:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-xs border-t border-slate-200 px-3 pt-2.5 pb-safe shadow-lg">
+    <div class="flex items-center justify-between gap-2.5 max-w-lg mx-auto">
+      <button id="mobile-prev-btn" type="button" class="flex-1 py-3 px-4 rounded-xl text-sm font-bold text-slate-700 bg-slate-100 active:bg-slate-200 disabled:opacity-40 transition">
+        ← 이전
+      </button>
+      <button id="mobile-next-btn" type="button" class="flex-[1.5] py-3 px-5 rounded-xl text-sm font-bold text-white bg-indigo-600 active:bg-indigo-700 shadow-xs transition flex items-center justify-center gap-1.5">
+        <span id="mobile-next-btn-text">다음 문제</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  </nav>
+
   <!-- 푸터 -->
-  <footer class="text-center text-xs text-slate-400 py-5 border-t border-slate-200 bg-white">
-    2025년 6월 21일 9급 지방직 공무원 컴퓨터일반 기출문제 CBT · 2D 좌표 기반 PDF 파싱 지원
+  <footer class="hidden sm:block text-center text-xs text-slate-400 py-5 border-t border-slate-200 bg-white">
+    9급 지방직 공무원 컴퓨터일반 기출문제 CBT · IndexedDB 오프라인 저장 &amp; GitHub Gist 기기 간 동기화 지원
   </footer>
 
   <!-- 정답표 확인/일괄 수정 모달 -->
-  <div id="answer-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+  <div id="answer-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white rounded-2xl max-w-2xl w-full shadow-xl border border-slate-200 overflow-hidden animate-fade-in">
-      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+      <div class="px-5 sm:px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
         <div>
           <h3 class="text-base font-bold text-slate-900">정답표 확인 및 일괄 수정</h3>
-          <p class="text-xs text-slate-500 mt-0.5">PDF 정답표가 누락되었거나 오인식된 경우 숫자(1~4)나 원문자(①~④)를 붙여넣어 즉시 반영할 수 있습니다.</p>
+          <p class="text-xs text-slate-500 mt-0.5">숫자(1~4)나 원문자(①~④)를 붙여넣어 한 번에 반영하거나 문항별로 수정할 수 있습니다.</p>
         </div>
-        <button id="close-answer-modal-btn" type="button" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">✕</button>
+        <button id="close-answer-modal-btn" type="button" class="text-slate-400 hover:text-slate-600 p-2 rounded-lg">✕</button>
       </div>
-      <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+      <div class="p-5 sm:p-6 space-y-4 max-h-[75vh] overflow-y-auto">
         <div>
           <label for="bulk-answer-input" class="block text-xs font-bold text-slate-700 mb-1.5">
             정답 일괄 입력 (공백/줄바꿈 무관, 순서대로 1~4 또는 ①~④ 입력)
           </label>
           <div class="flex gap-2">
-            <input id="bulk-answer-input" type="text" placeholder="예: 4 2 1 2 1 3 2 3 3 1 2 1 4 3 1 2 4 3 4 2" class="flex-1 px-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-indigo-500 code-font" />
-            <button id="apply-bulk-answer-btn" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shrink-0 transition">
+            <input id="bulk-answer-input" type="text" placeholder="예: 4 2 1 2 1 3 2 3 3 1 2 1 4 3 1 2 4 3 4 2" class="flex-1 px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-indigo-500 code-font" />
+            <button id="apply-bulk-answer-btn" type="button" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shrink-0 transition">
               일괄 적용
             </button>
           </div>
@@ -282,12 +347,85 @@
             <span class="text-xs font-bold text-slate-700">문항별 개별 정답 설정</span>
             <span id="modal-answer-summary" class="text-xs font-semibold text-indigo-600"></span>
           </div>
-          <div id="modal-answer-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-h-72 overflow-y-auto p-1"></div>
+          <div id="modal-answer-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-h-64 overflow-y-auto p-1"></div>
         </div>
       </div>
-      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end">
-        <button id="done-answer-modal-btn" type="button" class="px-5 py-2 rounded-xl text-sm font-bold bg-slate-800 hover:bg-slate-900 text-white transition">
+      <div class="px-5 sm:px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button id="done-answer-modal-btn" type="button" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-slate-800 hover:bg-slate-900 text-white transition">
           확인 완료
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 클라우드 동기화 (GitHub Gist) 설정 모달 -->
+  <div id="sync-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-xl border border-slate-200 overflow-hidden animate-fade-in">
+      <div class="px-5 sm:px-6 py-4 bg-sky-50 border-b border-sky-100 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-1.5">
+            <span>☁️ PC ↔ 휴대폰 클라우드 동기화 (GitHub Gist)</span>
+          </h3>
+          <p class="text-xs text-slate-600 mt-0.5">불러온 기출문제와 풀이·오답 기록을 비공개 Gist에 자동 저장하고 기기 간에 동기화합니다.</p>
+        </div>
+        <button id="close-sync-modal-btn" type="button" class="text-slate-400 hover:text-slate-600 p-2 rounded-lg">✕</button>
+      </div>
+
+      <div class="p-5 sm:p-6 space-y-4 max-h-[78vh] overflow-y-auto">
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs text-slate-600 space-y-1 leading-relaxed">
+          <div class="font-bold text-slate-800">사용 방법 안내</div>
+          <div>1. GitHub에서 <code class="px-1 py-0.5 bg-white border border-slate-200 rounded text-indigo-700">gist</code> 권한만 체크한 Personal Access Token을 발급받아 아래에 입력합니다.</div>
+          <div>2. 첫 기기(PC)에서 <strong>Gist ID를 비워둔 채</strong> [지금 업로드(백업)]를 누르면 새 비공개 Gist가 자동 생성되며 ID가 채워집니다.</div>
+          <div>3. 휴대폰에서 같은 토큰과 생성된 Gist ID를 입력한 뒤 [지금 불러오기(복원)]를 누르면 동일한 문제와 풀이 기록이 연동됩니다.</div>
+        </div>
+
+        <div>
+          <label for="gist-token-input" class="block text-xs font-bold text-slate-700 mb-1">
+            GitHub Personal Access Token (<span class="text-indigo-600">gist</span> 권한)
+          </label>
+          <input id="gist-token-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-sky-500 code-font" />
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label for="gist-id-input" class="block text-xs font-bold text-slate-700">
+              Gist ID (첫 연결 시 비워두면 자동 생성)
+            </label>
+            <button id="copy-gist-id-btn" type="button" class="text-xs font-semibold text-sky-600 hover:text-sky-800">
+              ID 복사
+            </button>
+          </div>
+          <input id="gist-id-input" type="text" placeholder="예: a1b2c3d4e5f6g7h8i9j0..." class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-sky-500 code-font" />
+        </div>
+
+        <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 bg-slate-50/70 cursor-pointer">
+          <div>
+            <div class="text-xs font-bold text-slate-800">자동 동기화 활성화</div>
+            <div class="text-[11px] text-slate-500">문제를 풀거나 새 PDF를 불러올 때마다 Gist에 자동 백업</div>
+          </div>
+          <input id="auto-sync-checkbox" type="checkbox" checked class="w-4 h-4 accent-sky-600 rounded" />
+        </label>
+
+        <div id="sync-modal-status" class="text-xs text-slate-500 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200">
+          현재 상태: 로컬 브라우저(IndexedDB)에 저장 중
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+          <button id="sync-push-btn" type="button" class="py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold bg-sky-600 hover:bg-sky-700 text-white shadow-xs transition">
+            ↑ 지금 업로드 (백업)
+          </button>
+          <button id="sync-pull-btn" type="button" class="py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">
+            ↓ 지금 불러오기 (복원)
+          </button>
+        </div>
+      </div>
+
+      <div class="px-5 sm:px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+        <button id="save-sync-settings-btn" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition">
+          설정 저장
+        </button>
+        <button id="done-sync-modal-btn" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-200 transition">
+          닫기
         </button>
       </div>
     </div>
@@ -300,8 +438,9 @@
     }
 
     /**
-     * 업로드된 PDF(9급지방직공무원컴퓨터일반20250621(학생용).pdf)의 20문항 전체 데이터 및 정답/해설
+     * 기본 내장 데이터: 2025년 06월 21일 9급 지방직 공무원 컴퓨터일반 20문항 전체
      */
+    const DEFAULT_EXAM_ID = "default_20250621";
     const DEFAULT_EXAM_TITLE = "9급 지방직 공무원 컴퓨터일반 (2025.06.21)";
     const DEFAULT_QUESTIONS = [
       {
@@ -357,7 +496,7 @@
         category: "알고리즘/정렬",
         question: "다음은 입력으로 들어온 배열 [70, 11, 31, 3, 17, 9, 32, 23]에 대하여 오름차순으로 버블 정렬 알고리즘의 수행 과정을 단계별로 나타낸 것으로 (가)에 해당하는 것은?",
         mediaHtml: `
-          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm code-font space-y-1.5 text-slate-800">
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm code-font space-y-1.5 text-slate-800 overflow-x-auto">
             <div><span class="text-slate-500">&lt;초기 상태&gt;</span> 단계 0: [70, 11, 31, 3, 17, 9, 32, 23]</div>
             <div>단계 1: [11, 31, 3, 17, 9, 32, 23, <span class="text-indigo-600 font-bold">70</span>]</div>
             <div>단계 2: [11, 3, 17, 9, 31, 23, <span class="text-indigo-600 font-bold">32, 70</span>]</div>
@@ -464,7 +603,6 @@
         mediaHtml: `
           <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex justify-center">
             <svg viewBox="0 0 360 250" class="w-full max-w-xs h-auto">
-              <!-- 간선 -->
               <g stroke="#475569" stroke-width="2">
                 <line x1="180" y1="30" x2="100" y2="90" />
                 <line x1="180" y1="30" x2="260" y2="90" />
@@ -475,7 +613,6 @@
                 <line x1="260" y1="90" x2="220" y2="155" />
                 <line x1="260" y1="90" x2="305" y2="155" />
               </g>
-              <!-- 노드 -->
               <g fill="#ffffff" stroke="#1e293b" stroke-width="2">
                 <circle cx="180" cy="30" r="17" />
                 <circle cx="100" cy="90" r="17" />
@@ -487,7 +624,6 @@
                 <circle cx="220" cy="155" r="17" />
                 <circle cx="305" cy="155" r="17" />
               </g>
-              <!-- 라벨 -->
               <g font-family="Inter, sans-serif" font-size="14" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="#0f172a">
                 <text x="180" y="30">A</text>
                 <text x="100" y="90">B</text>
@@ -835,22 +971,145 @@ print(rst)</code></pre>
       }
     ];
 
-    // 애플리케이션 상태
-    let state = {
-      examTitle: DEFAULT_EXAM_TITLE,
-      questions: [...DEFAULT_QUESTIONS],
-      currentIndex: 0,
-      userAnswers: new Array(DEFAULT_QUESTIONS.length).fill(null), // 1~4 or null
-      showOMR: false,
-      reviewFilter: 'all' // 'all' | 'wrong'
+    const CIRCLED_NUMS = ["①", "②", "③", "④"];
+
+    // 멀티 시험 저장소 구조 (IndexedDB 및 GitHub Gist 동기화 대상)
+    let library = {
+      activeExamId: DEFAULT_EXAM_ID,
+      updatedAt: Date.now(),
+      exams: {
+        [DEFAULT_EXAM_ID]: {
+          id: DEFAULT_EXAM_ID,
+          title: DEFAULT_EXAM_TITLE,
+          questions: JSON.parse(JSON.stringify(DEFAULT_QUESTIONS)),
+          userAnswers: new Array(DEFAULT_QUESTIONS.length).fill(null),
+          currentIndex: 0,
+          updatedAt: Date.now()
+        }
+      }
     };
 
-    const CIRCLED_NUMS = ["①", "②", "③", "④"];
+    // 현재 활성 시험 참조용 상태
+    let state = {
+      examId: DEFAULT_EXAM_ID,
+      examTitle: DEFAULT_EXAM_TITLE,
+      questions: library.exams[DEFAULT_EXAM_ID].questions,
+      currentIndex: 0,
+      userAnswers: library.exams[DEFAULT_EXAM_ID].userAnswers,
+      showOMR: false,
+      reviewFilter: 'all'
+    };
+
+    // GitHub Gist 동기화 설정 (localStorage에 기기별 저장)
+    const SYNC_STORAGE_KEY = "cbt_github_gist_sync_config_v1";
+    let syncConfig = {
+      token: "",
+      gistId: "",
+      autoSync: true,
+      lastSyncedAt: null
+    };
+
+    function loadSyncConfig() {
+      try {
+        const saved = localStorage.getItem(SYNC_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          syncConfig = { ...syncConfig, ...parsed };
+        }
+      } catch (_) {}
+    }
+
+    function saveSyncConfig() {
+      try {
+        localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(syncConfig));
+      } catch (_) {}
+    }
+
+    /**
+     * IndexedDB 오프라인 영구 저장소 (대용량 크롭 이미지 및 다수 회차 기출문제 안전 보관)
+     */
+    const IDB_NAME = "CivilServiceCBT_DB";
+    const IDB_VERSION = 1;
+    const IDB_STORE = "appState";
+
+    function openCbtDB() {
+      return new Promise((resolve, reject) => {
+        if (!window.indexedDB) {
+          reject(new Error("IndexedDB 미지원 브라우저"));
+          return;
+        }
+        const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(IDB_STORE)) {
+            db.createObjectStore(IDB_STORE);
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function saveLibraryToIDB() {
+      try {
+        // 현재 활성 상태를 library에 동기화
+        library.activeExamId = state.examId;
+        library.updatedAt = Date.now();
+        library.exams[state.examId] = {
+          id: state.examId,
+          title: state.examTitle,
+          questions: state.questions,
+          userAnswers: state.userAnswers,
+          currentIndex: state.currentIndex,
+          updatedAt: Date.now()
+        };
+
+        const db = await openCbtDB();
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE, "readwrite");
+          tx.objectStore(IDB_STORE).put(library, "library");
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        });
+        updateSyncStatusUI("로컬 저장 완료", "slate");
+      } catch (err) {
+        console.warn("IndexedDB 저장 경고:", err);
+      }
+    }
+
+    async function loadLibraryFromIDB() {
+      try {
+        const db = await openCbtDB();
+        const saved = await new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE, "readonly");
+          const req = tx.objectStore(IDB_STORE).get("library");
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => reject(req.error);
+        });
+
+        if (saved && saved.exams && Object.keys(saved.exams).length > 0) {
+          // 기본 시험이 없으면 보전
+          if (!saved.exams[DEFAULT_EXAM_ID]) {
+            saved.exams[DEFAULT_EXAM_ID] = library.exams[DEFAULT_EXAM_ID];
+          }
+          library = saved;
+          const targetId = library.exams[library.activeExamId] ? library.activeExamId : DEFAULT_EXAM_ID;
+          activateExam(targetId, false);
+        }
+      } catch (err) {
+        console.warn("IndexedDB 불러오기 경고:", err);
+      }
+    }
 
     // DOM 요소 참조
     const els = {
       examTitle: document.getElementById("exam-title"),
       examSubtitle: document.getElementById("exam-subtitle"),
+      syncStatusPill: document.getElementById("sync-status-pill"),
+      examSwitcher: document.getElementById("exam-switcher"),
+      deleteExamBtn: document.getElementById("delete-exam-btn"),
+      exportJsonBtn: document.getElementById("export-json-btn"),
+      importJsonInput: document.getElementById("import-json-input"),
       progressBar: document.getElementById("progress-bar"),
       toastBanner: document.getElementById("toast-banner"),
       toastContent: document.getElementById("toast-content"),
@@ -876,6 +1135,10 @@ print(rst)</code></pre>
       prevBtn: document.getElementById("prev-btn"),
       nextBtn: document.getElementById("next-btn"),
       nextBtnText: document.getElementById("next-btn-text"),
+      mobilePrevBtn: document.getElementById("mobile-prev-btn"),
+      mobileNextBtn: document.getElementById("mobile-next-btn"),
+      mobileNextBtnText: document.getElementById("mobile-next-btn-text"),
+      mobileBottomBar: document.getElementById("mobile-bottom-bar"),
       resultContainer: document.getElementById("result-container"),
       resultBadge: document.getElementById("result-badge"),
       resultExamName: document.getElementById("result-exam-name"),
@@ -895,7 +1158,19 @@ print(rst)</code></pre>
       bulkAnswerInput: document.getElementById("bulk-answer-input"),
       applyBulkAnswerBtn: document.getElementById("apply-bulk-answer-btn"),
       modalAnswerGrid: document.getElementById("modal-answer-grid"),
-      modalAnswerSummary: document.getElementById("modal-answer-summary")
+      modalAnswerSummary: document.getElementById("modal-answer-summary"),
+      openSyncModalBtn: document.getElementById("open-sync-modal-btn"),
+      syncModal: document.getElementById("sync-modal"),
+      closeSyncModalBtn: document.getElementById("close-sync-modal-btn"),
+      doneSyncModalBtn: document.getElementById("done-sync-modal-btn"),
+      gistTokenInput: document.getElementById("gist-token-input"),
+      gistIdInput: document.getElementById("gist-id-input"),
+      copyGistIdBtn: document.getElementById("copy-gist-id-btn"),
+      autoSyncCheckbox: document.getElementById("auto-sync-checkbox"),
+      syncModalStatus: document.getElementById("sync-modal-status"),
+      syncPushBtn: document.getElementById("sync-push-btn"),
+      syncPullBtn: document.getElementById("sync-pull-btn"),
+      saveSyncSettingsBtn: document.getElementById("save-sync-settings-btn")
     };
 
     // 알림 배너 표시 함수 (alert 대체)
@@ -905,12 +1180,81 @@ print(rst)</code></pre>
         success: "bg-emerald-50 text-emerald-800 border-emerald-200",
         error: "bg-rose-50 text-rose-800 border-rose-200"
       };
-      els.toastContent.className = `rounded-xl px-4 py-3 text-sm font-medium flex items-center justify-between shadow-sm border ${styles[type] || styles.info}`;
+      els.toastContent.className = `rounded-xl px-4 py-3 text-xs sm:text-sm font-medium flex items-center justify-between shadow-xs border ${styles[type] || styles.info}`;
       els.toastContent.innerHTML = `
         <span>${message}</span>
-        <button type="button" onclick="document.getElementById('toast-banner').classList.add('hidden')" class="ml-4 text-xs underline opacity-75 hover:opacity-100">닫기</button>
+        <button type="button" onclick="document.getElementById('toast-banner').classList.add('hidden')" class="ml-4 text-xs underline opacity-75 hover:opacity-100 shrink-0">닫기</button>
       `;
       els.toastBanner.classList.remove("hidden");
+    }
+
+    function updateSyncStatusUI(text, color = "slate") {
+      const badgeStyles = {
+        slate: "bg-slate-100 text-slate-600",
+        sky: "bg-sky-100 text-sky-800",
+        emerald: "bg-emerald-100 text-emerald-800",
+        rose: "bg-rose-100 text-rose-800"
+      };
+      if (els.syncStatusPill) {
+        els.syncStatusPill.className = `hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold shrink-0 ${badgeStyles[color] || badgeStyles.slate}`;
+        els.syncStatusPill.textContent = text;
+      }
+      if (els.syncModalStatus) {
+        els.syncModalStatus.textContent = `현재 상태: ${text}`;
+      }
+    }
+
+    // 시험 선택 드롭다운 갱신
+    function renderExamSwitcher() {
+      if (!els.examSwitcher) return;
+      els.examSwitcher.innerHTML = "";
+      const examList = Object.values(library.exams).sort((a, b) => {
+        if (a.id === DEFAULT_EXAM_ID) return -1;
+        if (b.id === DEFAULT_EXAM_ID) return 1;
+        return (b.updatedAt || 0) - (a.updatedAt || 0);
+      });
+
+      examList.forEach(exam => {
+        const opt = document.createElement("option");
+        opt.value = exam.id;
+        const solvedCount = (exam.userAnswers || []).filter(v => v !== null).length;
+        opt.textContent = `${exam.title} (${solvedCount}/${exam.questions.length}풀이)`;
+        if (exam.id === state.examId) opt.selected = true;
+        els.examSwitcher.appendChild(opt);
+      });
+
+      if (els.deleteExamBtn) {
+        els.deleteExamBtn.classList.toggle("hidden", state.examId === DEFAULT_EXAM_ID);
+      }
+    }
+
+    // 특정 시험 활성화
+    function activateExam(examId, persist = true) {
+      const target = library.exams[examId] || library.exams[DEFAULT_EXAM_ID];
+      if (!target) return;
+
+      if (!Array.isArray(target.userAnswers) || target.userAnswers.length !== target.questions.length) {
+        target.userAnswers = new Array(target.questions.length).fill(null);
+      }
+
+      state.examId = target.id;
+      state.examTitle = target.title;
+      state.questions = target.questions;
+      state.userAnswers = target.userAnswers;
+      state.currentIndex = Math.min(Math.max(0, target.currentIndex || 0), target.questions.length - 1);
+      state.reviewFilter = 'all';
+
+      els.resultContainer.classList.add("hidden");
+      els.quizContainer.classList.remove("hidden");
+      if (els.mobileBottomBar) els.mobileBottomBar.classList.remove("hidden");
+
+      renderExamSwitcher();
+      renderSubjectTabs();
+      renderQuestion();
+
+      if (persist) {
+        saveLibraryToIDB();
+      }
     }
 
     // 점수 통계 계산
@@ -945,13 +1289,15 @@ print(rst)</code></pre>
 
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = `py-2 rounded-lg text-xs font-bold border transition ${btnStyle}`;
+        btn.className = `py-2.5 rounded-lg text-xs font-bold border transition ${btnStyle}`;
         btn.textContent = `${q.num}번`;
         btn.addEventListener("click", () => {
           state.currentIndex = idx;
           els.resultContainer.classList.add("hidden");
           els.quizContainer.classList.remove("hidden");
+          if (els.mobileBottomBar) els.mobileBottomBar.classList.remove("hidden");
           renderQuestion();
+          saveLibraryToIDB();
         });
         els.omrGrid.appendChild(btn);
       });
@@ -966,7 +1312,6 @@ print(rst)</code></pre>
       const isAnswered = userChoice !== null;
       const { correct, wrong } = getStats();
 
-      // 상단 제목, 부제목, 배지, 통계 및 진행률 업데이트
       els.examTitle.textContent = state.examTitle;
       if (els.examSubtitle) {
         els.examSubtitle.textContent = `전자문제집 CBT 기출문제 실전 연습 · 총 ${total}문항`;
@@ -988,11 +1333,11 @@ print(rst)</code></pre>
         els.progressBar.style.width = `${pct}%`;
       }
 
-      // 문제 본문 및 시각 자료(SVG/표/코드/자동 감지 이미지) 렌더링
+      // 문제 본문 및 시각 자료 렌더링
       els.questionText.textContent = `${q.num}. ${q.question}`;
       els.questionMedia.innerHTML = q.mediaHtml || "";
 
-      // 원본 PDF 영역 수동 토글 버튼 제어 (단일 및 페이지/컬럼 걸침 다중 이미지 지원)
+      // 원본 PDF 영역 수동 토글 버튼 제어 (단일 및 다중 구간 이미지 지원)
       els.questionPdfCropBox.classList.add("hidden");
       const cropUrls = Array.isArray(q.fullQuestionCropUrls) && q.fullQuestionCropUrls.length > 0
         ? q.fullQuestionCropUrls
@@ -1021,17 +1366,17 @@ print(rst)</code></pre>
         const btn = document.createElement("button");
         btn.type = "button";
 
-        let baseClass = "w-full text-left p-4 rounded-xl border-2 transition-all flex items-center justify-between gap-3 group ";
-        let badgeClass = "w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0 border ";
+        let baseClass = "w-full text-left p-4 sm:p-4 rounded-xl border-2 transition-all flex items-center justify-between gap-3 group ";
+        let badgeClass = "w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 border ";
         let statusIcon = "";
 
         if (!isAnswered) {
-          baseClass += "bg-white border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/40 cursor-pointer";
+          baseClass += "bg-white border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/40 active:bg-indigo-50 cursor-pointer";
           badgeClass += "bg-slate-100 text-slate-700 border-slate-300 group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600";
         } else {
           btn.disabled = true;
           if (optionNum === q.answer) {
-            baseClass += "bg-emerald-50 border-emerald-500 text-emerald-950 font-semibold shadow-sm";
+            baseClass += "bg-emerald-50 border-emerald-500 text-emerald-950 font-semibold shadow-2xs";
             badgeClass += "bg-emerald-600 text-white border-emerald-600";
             statusIcon = `<span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full shrink-0">✓ 정답</span>`;
           } else if (optionNum === userChoice && userChoice !== q.answer) {
@@ -1082,27 +1427,33 @@ print(rst)</code></pre>
         els.feedbackBox.classList.add("hidden");
       }
 
-      // 이전/다음 버튼 상태 업데이트
-      els.prevBtn.disabled = idx === 0;
-      if (idx === total - 1) {
-        els.nextBtnText.textContent = "결과 확인하기";
-      } else {
-        els.nextBtnText.textContent = "다음 문제";
-      }
+      // 데스크톱 & 모바일 이전/다음 버튼 상태 업데이트
+      const isFirst = idx === 0;
+      const isLast = idx === total - 1;
+      const nextLabel = isLast ? "결과 확인하기" : "다음 문제";
 
+      els.prevBtn.disabled = isFirst;
+      els.nextBtnText.textContent = nextLabel;
+      if (els.mobilePrevBtn) els.mobilePrevBtn.disabled = isFirst;
+      if (els.mobileNextBtnText) els.mobileNextBtnText.textContent = nextLabel;
+
+      renderExamSwitcher();
       renderOMR();
     }
 
-    // 선택지 클릭 처리
-    function handleSelectOption(optionNum) {
+    // 선택지 클릭 처리 + 로컬 저장 및 자동 클라우드 동기화
+    async function handleSelectOption(optionNum) {
       if (state.userAnswers[state.currentIndex] !== null) return;
       state.userAnswers[state.currentIndex] = optionNum;
       renderQuestion();
+      await saveLibraryToIDB();
+      triggerAutoSyncDebounced();
     }
 
     // 최종 결과 화면 렌더링
     function renderResults() {
       els.quizContainer.classList.add("hidden");
+      if (els.mobileBottomBar) els.mobileBottomBar.classList.add("hidden");
       els.resultContainer.classList.remove("hidden");
       els.progressBar.style.width = "100%";
 
@@ -1165,28 +1516,59 @@ print(rst)</code></pre>
             <div class="${isCorrect ? "text-emerald-700" : "text-rose-700"} font-medium">• 내 선택: ${userText}</div>
             <div class="text-emerald-700 font-bold">• 실제 정답: ${ansText}</div>
           </div>
-          <p class="text-xs text-slate-600 bg-slate-100/80 p-3 rounded-lg leading-relaxed">${q.explanation}</p>
+          <p class="text-xs text-slate-600 bg-slate-100/80 p-3 rounded-lg leading-relaxed whitespace-pre-line">${q.explanation}</p>
         `;
         els.reviewList.appendChild(card);
       });
     }
 
-    // 이벤트 리스너 등록
-    els.prevBtn.addEventListener("click", () => {
+    function goPrevQuestion() {
       if (state.currentIndex > 0) {
         state.currentIndex--;
         renderQuestion();
+        saveLibraryToIDB();
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
-    });
+    }
 
-    els.nextBtn.addEventListener("click", () => {
+    function goNextQuestion() {
       if (state.currentIndex < state.questions.length - 1) {
         state.currentIndex++;
         renderQuestion();
+        saveLibraryToIDB();
+        window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
         renderResults();
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
-    });
+    }
+
+    // 네비게이션 및 컨트롤 이벤트 등록
+    els.prevBtn.addEventListener("click", goPrevQuestion);
+    els.nextBtn.addEventListener("click", goNextQuestion);
+    if (els.mobilePrevBtn) els.mobilePrevBtn.addEventListener("click", goPrevQuestion);
+    if (els.mobileNextBtn) els.mobileNextBtn.addEventListener("click", goNextQuestion);
+
+    // 모바일 터치 스와이프 제스처 (좌로 스와이프: 다음 문제, 우로 스와이프: 이전 문제)
+    let touchStartX = 0;
+    let touchStartY = 0;
+    els.quizContainer.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    els.quizContainer.addEventListener("touchend", (e) => {
+      if (e.changedTouches.length !== 1) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      // 가로 스와이프 거리가 65px 이상이고 세로 스크롤보다 뚜렷할 때만 이동
+      if (Math.abs(dx) > 65 && Math.abs(dx) > Math.abs(dy) * 1.6) {
+        if (dx < 0) goNextQuestion();
+        else goPrevQuestion();
+      }
+    }, { passive: true });
 
     els.toggleOmrBtn.addEventListener("click", () => {
       state.showOMR = !state.showOMR;
@@ -1208,19 +1590,77 @@ print(rst)</code></pre>
       renderReviewList();
     });
 
-    els.restartBtn.addEventListener("click", () => {
+    els.restartBtn.addEventListener("click", async () => {
       state.currentIndex = 0;
       state.userAnswers = new Array(state.questions.length).fill(null);
       state.reviewFilter = 'all';
       els.resultContainer.classList.add("hidden");
       els.quizContainer.classList.remove("hidden");
+      if (els.mobileBottomBar) els.mobileBottomBar.classList.remove("hidden");
       renderQuestion();
+      await saveLibraryToIDB();
+      triggerAutoSyncDebounced();
+    });
+
+    // 시험 회차 변경 및 삭제 이벤트
+    els.examSwitcher.addEventListener("change", (e) => {
+      activateExam(e.target.value, true);
+    });
+
+    els.deleteExamBtn.addEventListener("click", async () => {
+      if (state.examId === DEFAULT_EXAM_ID) return;
+      delete library.exams[state.examId];
+      activateExam(DEFAULT_EXAM_ID, true);
+      showToast("선택한 기출문제 세트가 삭제되었습니다.", "info");
+      triggerAutoSyncDebounced();
+    });
+
+    // JSON 내보내기 / 가져오기 (오프라인 수동 백업용)
+    els.exportJsonBtn.addEventListener("click", () => {
+      saveLibraryToIDB();
+      const blob = new Blob([JSON.stringify(library, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const dateStr = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `cbt_backup_${dateStr}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("전체 기출문제 및 풀이 기록 JSON 백업 파일이 다운로드되었습니다.", "success");
+    });
+
+    els.importJsonInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const imported = JSON.parse(text);
+        if (imported && imported.exams && typeof imported.exams === "object") {
+          library.exams = { ...library.exams, ...imported.exams };
+          const targetId = imported.activeExamId && library.exams[imported.activeExamId]
+            ? imported.activeExamId
+            : Object.keys(imported.exams)[0];
+          activateExam(targetId, true);
+          showToast("JSON 백업 데이터를 성공적으로 불러왔습니다.", "success");
+        } else {
+          showToast("올바른 CBT 백업 JSON 형식이 아닙니다.", "error");
+        }
+      } catch (err) {
+        showToast("JSON 파일을 읽는 중 오류가 발생했습니다.", "error");
+      } finally {
+        e.target.value = "";
+      }
     });
 
     // 키보드 단축키 지원 (1~4: 보기 선택, Enter / ArrowRight: 다음 문제, ArrowLeft: 이전 문제)
     document.addEventListener("keydown", (e) => {
-      if (!els.answerModal.classList.contains("hidden")) {
-        if (e.key === "Escape") closeAnswerModal();
+      if (!els.answerModal.classList.contains("hidden") || !els.syncModal.classList.contains("hidden")) {
+        if (e.key === "Escape") {
+          closeAnswerModal();
+          closeSyncModal();
+        }
         return;
       }
       if (!els.resultContainer.classList.contains("hidden")) return;
@@ -1232,11 +1672,222 @@ print(rst)</code></pre>
         }
       } else if (e.key === "Enter" || e.key === "ArrowRight") {
         e.preventDefault();
-        els.nextBtn.click();
+        goNextQuestion();
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
-        if (!els.prevBtn.disabled) els.prevBtn.click();
+        goPrevQuestion();
       }
+    });
+
+    /**
+     * GitHub Gist 클라우드 동기화 엔진 (PC ↔ 휴대폰)
+     */
+    const GIST_FILENAME = "civil_service_cbt_sync.json";
+    let autoSyncTimer = null;
+
+    function triggerAutoSyncDebounced() {
+      if (!syncConfig.autoSync || !syncConfig.token) return;
+      clearTimeout(autoSyncTimer);
+      autoSyncTimer = setTimeout(() => {
+        pushToGitHubGist(true);
+      }, 1500);
+    }
+
+    async function pushToGitHubGist(silent = false) {
+      const token = (syncConfig.token || "").trim();
+      if (!token) {
+        if (!silent) showToast("GitHub Personal Access Token을 먼저 입력해주세요.", "error");
+        return false;
+      }
+
+      try {
+        updateSyncStatusUI("Gist 업로드 중...", "sky");
+        await saveLibraryToIDB();
+
+        const payloadContent = JSON.stringify(library);
+        const body = {
+          description: "9급 공무원 CBT 기출문제 및 풀이 기록 동기화 데이터",
+          public: false,
+          files: {
+            [GIST_FILENAME]: {
+              content: payloadContent
+            }
+          }
+        };
+
+        const existingGistId = (syncConfig.gistId || "").trim();
+        const url = existingGistId
+          ? `https://api.github.com/gists/${existingGistId}`
+          : "https://api.github.com/gists";
+        const method = existingGistId ? "PATCH" : "POST";
+
+        const res = await fetch(url, {
+          method,
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github+json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || `HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        if (data && data.id) {
+          syncConfig.gistId = data.id;
+          syncConfig.lastSyncedAt = new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
+          saveSyncConfig();
+          if (els.gistIdInput) els.gistIdInput.value = data.id;
+        }
+
+        updateSyncStatusUI(`동기화됨 (${syncConfig.lastSyncedAt})`, "emerald");
+        if (!silent) {
+          showToast(`GitHub Gist에 백업 완료! (Gist ID: ${syncConfig.gistId})`, "success");
+        }
+        return true;
+      } catch (err) {
+        console.error("Gist 업로드 오류:", err);
+        updateSyncStatusUI("동기화 실패", "rose");
+        if (!silent) {
+          showToast(`GitHub Gist 업로드 실패: ${err.message}`, "error");
+        }
+        return false;
+      }
+    }
+
+    async function pullFromGitHubGist(silent = false) {
+      const token = (syncConfig.token || "").trim();
+      const gistId = (syncConfig.gistId || "").trim();
+
+      if (!token || !gistId) {
+        if (!silent) showToast("토큰과 Gist ID를 모두 입력한 뒤 불러오기를 눌러주세요.", "error");
+        return false;
+      }
+
+      try {
+        updateSyncStatusUI("Gist 불러오는 중...", "sky");
+        const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github+json"
+          }
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || `HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        const fileObj = data.files && data.files[GIST_FILENAME];
+        if (!fileObj) {
+          throw new Error("해당 Gist에 CBT 동기화 파일이 없습니다.");
+        }
+
+        let rawContent = fileObj.content;
+        // 파일 크기가 1MB 이상으로 truncated 된 경우 raw_url에서 전체 다운로드
+        if (fileObj.truncated && fileObj.raw_url) {
+          const rawRes = await fetch(fileObj.raw_url);
+          rawContent = await rawRes.text();
+        }
+
+        const remoteLibrary = JSON.parse(rawContent);
+        if (!remoteLibrary || !remoteLibrary.exams) {
+          throw new Error("동기화 데이터 형식이 올바르지 않습니다.");
+        }
+
+        // 로컬과 원격 시험 데이터 병합 (최신 updatedAt 우선)
+        const mergedExams = { ...library.exams };
+        for (const [id, remoteExam] of Object.entries(remoteLibrary.exams)) {
+          const localExam = mergedExams[id];
+          if (!localExam || (remoteExam.updatedAt || 0) >= (localExam.updatedAt || 0)) {
+            mergedExams[id] = remoteExam;
+          }
+        }
+        if (!mergedExams[DEFAULT_EXAM_ID]) {
+          mergedExams[DEFAULT_EXAM_ID] = library.exams[DEFAULT_EXAM_ID];
+        }
+
+        library.exams = mergedExams;
+        const targetId = remoteLibrary.activeExamId && mergedExams[remoteLibrary.activeExamId]
+          ? remoteLibrary.activeExamId
+          : state.examId;
+
+        syncConfig.lastSyncedAt = new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
+        saveSyncConfig();
+        activateExam(targetId, true);
+
+        updateSyncStatusUI(`동기화됨 (${syncConfig.lastSyncedAt})`, "emerald");
+        if (!silent) {
+          showToast("GitHub Gist에서 최신 기출문제 및 풀이 기록을 복원했습니다!", "success");
+        }
+        return true;
+      } catch (err) {
+        console.error("Gist 불러오기 오류:", err);
+        updateSyncStatusUI("동기화 오류", "rose");
+        if (!silent) {
+          showToast(`GitHub Gist 불러오기 실패: ${err.message}`, "error");
+        }
+        return false;
+      }
+    }
+
+    function openSyncModal() {
+      if (els.gistTokenInput) els.gistTokenInput.value = syncConfig.token || "";
+      if (els.gistIdInput) els.gistIdInput.value = syncConfig.gistId || "";
+      if (els.autoSyncCheckbox) els.autoSyncCheckbox.checked = Boolean(syncConfig.autoSync);
+      els.syncModal.classList.remove("hidden");
+    }
+
+    function closeSyncModal() {
+      els.syncModal.classList.add("hidden");
+    }
+
+    els.openSyncModalBtn.addEventListener("click", openSyncModal);
+    els.closeSyncModalBtn.addEventListener("click", closeSyncModal);
+    els.doneSyncModalBtn.addEventListener("click", closeSyncModal);
+
+    els.saveSyncSettingsBtn.addEventListener("click", () => {
+      syncConfig.token = (els.gistTokenInput.value || "").trim();
+      syncConfig.gistId = (els.gistIdInput.value || "").trim();
+      syncConfig.autoSync = Boolean(els.autoSyncCheckbox.checked);
+      saveSyncConfig();
+      showToast("GitHub Gist 동기화 설정이 이 기기에 저장되었습니다.", "success");
+    });
+
+    els.syncPushBtn.addEventListener("click", async () => {
+      syncConfig.token = (els.gistTokenInput.value || "").trim();
+      syncConfig.gistId = (els.gistIdInput.value || "").trim();
+      syncConfig.autoSync = Boolean(els.autoSyncCheckbox.checked);
+      saveSyncConfig();
+      await pushToGitHubGist(false);
+    });
+
+    els.syncPullBtn.addEventListener("click", async () => {
+      syncConfig.token = (els.gistTokenInput.value || "").trim();
+      syncConfig.gistId = (els.gistIdInput.value || "").trim();
+      syncConfig.autoSync = Boolean(els.autoSyncCheckbox.checked);
+      saveSyncConfig();
+      await pullFromGitHubGist(false);
+    });
+
+    els.copyGistIdBtn.addEventListener("click", () => {
+      const val = (els.gistIdInput.value || "").trim();
+      if (!val) {
+        showToast("복사할 Gist ID가 아직 없습니다. 먼저 업로드를 실행해주세요.", "info");
+        return;
+      }
+      els.gistIdInput.select();
+      document.execCommand("copy");
+      showToast("Gist ID가 클립보드에 복사되었습니다. 휴대폰에 붙여넣으세요!", "success");
+    });
+
+    els.syncModal.addEventListener("click", (e) => {
+      if (e.target === els.syncModal) closeSyncModal();
     });
 
     /**
@@ -1272,7 +1923,9 @@ print(rst)</code></pre>
           state.currentIndex = subj.index;
           els.resultContainer.classList.add("hidden");
           els.quizContainer.classList.remove("hidden");
+          if (els.mobileBottomBar) els.mobileBottomBar.classList.remove("hidden");
           renderQuestion();
+          saveLibraryToIDB();
         });
         els.subjectTabs.appendChild(btn);
       });
@@ -1288,13 +1941,15 @@ print(rst)</code></pre>
       els.answerModal.classList.remove("hidden");
     }
 
-    function closeAnswerModal() {
+    async function closeAnswerModal() {
       if (!els.answerModal) return;
       els.answerModal.classList.add("hidden");
       renderQuestion();
       if (!els.resultContainer.classList.contains("hidden")) {
         renderResults();
       }
+      await saveLibraryToIDB();
+      triggerAutoSyncDebounced();
     }
 
     function renderAnswerModalGrid() {
@@ -1372,23 +2027,13 @@ print(rst)</code></pre>
       showToast(`1번부터 ${applyCount}번까지 총 ${applyCount}문항의 정답이 반영되었습니다.`, "success");
     }
 
-    if (els.openAnswerModalBtn) {
-      els.openAnswerModalBtn.addEventListener("click", openAnswerModal);
-    }
-    if (els.closeAnswerModalBtn) {
-      els.closeAnswerModalBtn.addEventListener("click", closeAnswerModal);
-    }
-    if (els.doneAnswerModalBtn) {
-      els.doneAnswerModalBtn.addEventListener("click", closeAnswerModal);
-    }
-    if (els.applyBulkAnswerBtn) {
-      els.applyBulkAnswerBtn.addEventListener("click", applyBulkAnswers);
-    }
-    if (els.answerModal) {
-      els.answerModal.addEventListener("click", (e) => {
-        if (e.target === els.answerModal) closeAnswerModal();
-      });
-    }
+    els.openAnswerModalBtn.addEventListener("click", openAnswerModal);
+    els.closeAnswerModalBtn.addEventListener("click", closeAnswerModal);
+    els.doneAnswerModalBtn.addEventListener("click", closeAnswerModal);
+    els.applyBulkAnswerBtn.addEventListener("click", applyBulkAnswers);
+    els.answerModal.addEventListener("click", (e) => {
+      if (e.target === els.answerModal) closeAnswerModal();
+    });
 
     /**
      * 외부 전자문제집 CBT PDF 파일 업로드 및 2D 좌표 + 고해상도 캔버스 이미지 추출 파싱
@@ -1411,7 +2056,6 @@ print(rst)</code></pre>
           const renderViewport = page.getViewport({ scale: RENDER_SCALE });
           const content = await page.getTextContent();
 
-          // 고해상도 오프스크린 캔버스 렌더링 (문항 내 그림/표/수식 크롭용)
           let canvas = null;
           try {
             canvas = document.createElement("canvas");
@@ -1426,7 +2070,6 @@ print(rst)</code></pre>
             canvas = null;
           }
 
-          // 내장 래스터 이미지 / 벡터 그래픽 연산자 검사
           let hasGraphicOps = false;
           try {
             const opList = await page.getOperatorList();
@@ -1470,32 +2113,34 @@ print(rst)</code></pre>
         return;
       }
 
-      // 파싱 완료 후 상태 반영 및 화면 렌더링 분리
       try {
         if (parsed && parsed.questions && parsed.questions.length >= 1) {
-          state.examTitle = parsed.title;
-          state.questions = parsed.questions;
-          state.currentIndex = 0;
-          state.userAnswers = new Array(parsed.questions.length).fill(null);
-          els.resultContainer.classList.add("hidden");
-          els.quizContainer.classList.remove("hidden");
+          const newExamId = `pdf_${Date.now()}`;
+          library.exams[newExamId] = {
+            id: newExamId,
+            title: parsed.title,
+            questions: parsed.questions,
+            userAnswers: new Array(parsed.questions.length).fill(null),
+            currentIndex: 0,
+            updatedAt: Date.now()
+          };
 
-          renderSubjectTabs();
-          renderQuestion();
+          activateExam(newExamId, true);
+          triggerAutoSyncDebounced();
 
           const matchedCount = parsed.matchedAnswerCount;
           const mediaDetectedCount = parsed.questions.filter(q => q.hasAutoImage).length;
           const mediaNote = mediaDetectedCount > 0 ? ` (그림/도표 ${mediaDetectedCount}건 자동 추출)` : "";
 
           if (matchedCount >= parsed.questions.length) {
-            showToast(`총 ${parsed.questions.length}문항 / 정답 ${matchedCount}개 인식 완료!${mediaNote}`, "success");
+            showToast(`총 ${parsed.questions.length}문항 / 정답 ${matchedCount}개 인식 및 저장 완료!${mediaNote}`, "success");
           } else if (matchedCount > 0) {
-            showToast(`총 ${parsed.questions.length}문항 중 ${matchedCount}개 정답 인식 완료.${mediaNote} 누락된 정답은 상단 [정답표 확인/수정]에서 보완할 수 있습니다.`, "info");
+            showToast(`총 ${parsed.questions.length}문항 중 ${matchedCount}개 정답 인식 완료.${mediaNote} 누락된 정답은 상단 [정답표]에서 보완할 수 있습니다.`, "info");
           } else {
-            showToast(`총 ${parsed.questions.length}문항을 불러왔으나 정답표를 찾지 못했습니다.${mediaNote} 상단 [정답표 확인/수정]으로 정답을 입력해주세요.`, "error");
+            showToast(`총 ${parsed.questions.length}문항을 불러왔으나 정답표를 찾지 못했습니다.${mediaNote} 상단 [정답표]로 정답을 입력해주세요.`, "error");
           }
         } else {
-          showToast("표준 CBT 형식의 문항을 인식하지 못해 기본 기출문제를 유지합니다.", "error");
+          showToast("표준 CBT 형식의 문항을 인식하지 못해 현재 시험을 유지합니다.", "error");
         }
       } catch (uiErr) {
         console.error("화면 렌더링 오류:", uiErr);
@@ -1506,10 +2151,6 @@ print(rst)</code></pre>
 
     /**
      * 2D 좌표(x, y) 기반 전자문제집 CBT(comcbt.com) 파서
-     * 1) 2단 편집(좌단/우단) 분리 및 y좌표 행 메타데이터(y, xMin, pageObj) 유지
-     * 2) 홍보/바닥글 문구(comcbt.com 안내 블록) 차단
-     * 3) 문항 내 길고 큰 그림/도표/수식 영역의 픽셀 바운딩 박스 자동 감지 및 고해상도 캔버스 크롭
-     * 4) 마지막 페이지(들)의 정답표 그리드 1:1 매칭
      */
     const PROMO_BOILERPLATE_REGEX = /(전자문제집\s*CBT\s*홈페이지|기출문제\s*및\s*해설집\s*다운로드|전자문제집\s*CBT\s*앱|전자문제집\s*CBT란\??|종이\s*문제집이\s*아닌\s*인터넷으로|모의고사,\s*오답\s*노트,\s*해설까지|실제\s*시험에서\s*사용하는\s*OMR\s*형식의\s*CBT|PC\s*버전\s*및\s*모바일\s*버전\s*완벽\s*연동|교사용\/학생용\s*관리기능도\s*제공|오답\s*및\s*오탈자가\s*수정된|최신\s*수정된\s*\(오타,\s*오답|최강\s*자격증\s*기출문제\s*전자문제집|www\.comcbt\.com)/i;
 
@@ -1525,7 +2166,6 @@ print(rst)</code></pre>
     function parseComcbtPdf2D(pagesData, fallbackTitle) {
       const answerMap = extractAnswerKeyFrom2D(pagesData);
 
-      // 2단 컬럼(Page 1 Left -> Page 1 Right -> Page 2 Left -> Page 2 Right ...) 스트림 및 세그먼트 경계 메타데이터 생성
       const columnStreams = [];
       let orderedLineObjs = [];
 
@@ -1536,7 +2176,6 @@ print(rst)</code></pre>
 
         const bodyTokens = page.tokens.filter(t => {
           if (PROMO_BOILERPLATE_REGEX.test(t.str)) return false;
-          // 최상단 시험지 제목 헤더 및 최하단 페이지 번호 영역 제외
           if (t.y > bodyTopY || t.y < bodyBottomY) return false;
           return true;
         });
@@ -1576,13 +2215,11 @@ print(rst)</code></pre>
       for (const lineObj of orderedLineObjs) {
         const line = lineObj.text;
 
-        // 전자문제집 CBT 홍보 안내 블록 시작 시 이후 홍보 줄 무시 (새 문항 번호가 나오면 해제)
         if (PROMO_BOILERPLATE_REGEX.test(line)) {
           inPromoSection = true;
           continue;
         }
 
-        // 과목 헤더 감지 (예: "1과목 : 소프트웨어 설계")
         const subjMatch = line.match(/^(\d+\s*과목\s*[:：]\s*.+)$/);
         if (subjMatch) {
           inPromoSection = false;
@@ -1590,7 +2227,6 @@ print(rst)</code></pre>
           continue;
         }
 
-        // 새 문항 시작 감지
         const qStartMatch = line.match(/^(\d{1,3})\.\s+(.+)$/);
         if (qStartMatch) {
           const qNum = parseInt(qStartMatch[1], 10);
@@ -1639,7 +2275,6 @@ print(rst)</code></pre>
         questions.push(finalizeParsedQuestion(currentQ, answerMap, columnStreams));
       }
 
-      // 정규식 폴백 (1단 레이아웃 등 예외 케이스)
       if (questions.length < 5) {
         const flatText = orderedLineObjs
           .map(l => stripComcbtBoilerplate(l.text))
@@ -1672,7 +2307,6 @@ print(rst)</code></pre>
       return currentQ.endLineObj;
     }
 
-    // 토큰 배열을 y좌표 기준 행 객체({ text, y, minX, maxX, page, col, colMeta })로 병합
     function groupTokensIntoLineObjects(tokens, yTolerance = 6, page = null, col = "left", colMeta = null) {
       if (!tokens.length) return [];
       const sorted = [...tokens].sort((a, b) => b.y - a.y || a.x - b.x);
@@ -1697,14 +2331,12 @@ print(rst)</code></pre>
       });
     }
 
-    // 호환용 문자열 배열 변환기
     function groupTokensIntoLines(tokens, yTolerance = 6) {
       return groupTokensIntoLineObjects(tokens, yTolerance).map(r => r.text);
     }
 
     /**
      * 문항이 시작된 컬럼부터 다음 문항이 시작되기 직전 컬럼까지 걸쳐 있는 모든 (page, col, topY, bottomY) 세그먼트를 산출
-     * - 질문 지문이 우측 하단에 있고 이미지/보기가 다음 페이지 좌측 상단에 위치한 경우 양쪽 구간 모두 포함
      */
     function buildQuestionSegments(rawQ, columnStreams) {
       if (!rawQ.startLineObj || !rawQ.startLineObj.colMeta || !columnStreams || columnStreams.length === 0) {
@@ -1715,11 +2347,9 @@ print(rst)</code></pre>
       const endLine = rawQ.endLineObj || rawQ.startLineObj;
       let endMeta = endLine.colMeta || startMeta;
 
-      // 다음 문항이 현재 끝 줄보다 뒤의 컬럼(예: 우측 하단 질문 후 다음 페이지 좌측 상단 이미지 -> 우측 상단 다음 문항)에 있으면 그 직전 컬럼까지 확장
       if (rawQ.nextStartLineObj && rawQ.nextStartLineObj.colMeta) {
         const nextMeta = rawQ.nextStartLineObj.colMeta;
         if (nextMeta.streamIndex > endMeta.streamIndex) {
-          // 다음 문항이 컬럼 최상단이 아닌 중간에 시작하면 해당 컬럼의 nextStartLineObj 위쪽까지 포함
           const isNextAtVeryTop = rawQ.nextStartLineObj.y >= nextMeta.bodyTopY - 22;
           const targetIdx = isNextAtVeryTop ? nextMeta.streamIndex - 1 : nextMeta.streamIndex;
           if (targetIdx >= startMeta.streamIndex) {
@@ -1727,14 +2357,12 @@ print(rst)</code></pre>
           }
         }
       } else {
-        // 마지막 문항(예: 20번)의 경우 바로 다음 컬럼 상단(정답표 이전)에 단독 이미지가 있을 수 있으므로 최대 1컬럼 확인
         if (endMeta.streamIndex + 1 < columnStreams.length) {
           const candidateNext = columnStreams[endMeta.streamIndex + 1];
           const hasAnswerTableHeader = candidateNext.page.tokens.some(t =>
             /전자문제집\s*CBT|기출문제\s*및\s*해설집/.test(t.str)
           );
           if (!hasAnswerTableHeader) {
-            // 해당 컬럼에 다른 문항 번호가 없을 때만 확장
             const hasAnyQuestionNum = candidateNext.page.tokens.some(t => {
               const isCol = candidateNext.col === "left" ? t.x < candidateNext.page.width * 0.49 : t.x >= candidateNext.page.width * 0.49;
               return isCol && /^\d{1,3}\.$/.test(t.str.trim());
@@ -1779,7 +2407,6 @@ print(rst)</code></pre>
       return segments;
     }
 
-    // 개별 문항 본문에서 문제 지문, 구조적 보기 박스, 그림/도표 이미지(단/페이지 넘김 포함), ①~④ 선택지 분리
     function finalizeParsedQuestion(rawQ, answerMap, columnStreams = []) {
       const text = stripComcbtBoilerplate(rawQ.rawBody);
       const idx1 = text.indexOf("①");
@@ -1791,7 +2418,6 @@ print(rst)</code></pre>
       let mediaHtml = "";
       let options = ["보기 ①", "보기 ②", "보기 ③", "보기 ④"];
 
-      // 1. 문항이 걸친 모든 컬럼/페이지 세그먼트 계산 (우측 하단 질문 -> 다음 페이지 좌측 상단 이미지/선택지 대응)
       const segments = buildQuestionSegments(rawQ, columnStreams);
       const fullQuestionCropUrls = [];
       for (const seg of segments) {
@@ -1799,13 +2425,11 @@ print(rst)</code></pre>
         if (url) fullQuestionCropUrls.push(url);
       }
 
-      // 2. 문항의 모든 세그먼트에서 그림/도표/4분할 그래프/수식 수직 영역 자동 탐지 (높이 상한 제한 없음)
       const diagramImages = [];
       const opt1Line = rawQ.lineObjs ? rawQ.lineObjs.find(l => l.text.includes("①")) : null;
 
       if (segments.length > 0 && rawQ.lineObjs && rawQ.lineObjs.length > 0) {
         for (const seg of segments) {
-          // 선택지 ①이 이미 이전 세그먼트에서 시작된 경우 이후 세그먼트는 그림 영역이 아님
           if (opt1Line && opt1Line.colMeta && opt1Line.colMeta.streamIndex < seg.streamIndex) {
             continue;
           }
@@ -1814,10 +2438,8 @@ print(rst)</code></pre>
             l => l.colMeta && l.colMeta.streamIndex === seg.streamIndex
           );
 
-          // 다이어그램 스캔 상단(diagTopY) 결정
           let diagTopY = seg.topY;
           if (seg.isFirst) {
-            // 첫 세그먼트에서는 질문 지문이 끝나는 줄 바로 아래부터 스캔 시작
             let stemEndLine = segLines[0] || rawQ.startLineObj;
             for (let i = 0; i < segLines.length; i++) {
               const l = segLines[i];
@@ -1829,26 +2451,20 @@ print(rst)</code></pre>
             }
             diagTopY = stemEndLine.y - 8;
           } else {
-            // 다음 컬럼/페이지로 넘어간 세그먼트는 컬럼 최상단(헤더 바로 아래)부터 스캔 시작
             diagTopY = seg.topY;
           }
 
-          // 다이어그램 스캔 하단(diagBottomY) 결정
           let diagBottomY = seg.bottomY;
           if (opt1Line && opt1Line.colMeta && opt1Line.colMeta.streamIndex === seg.streamIndex) {
-            // 선택지 ①이 이 세그먼트에 있으면 ① 바로 위까지 스캔
             diagBottomY = opt1Line.y + 10;
           } else if (seg.isLast && rawQ.nextStartLineObj && rawQ.nextStartLineObj.colMeta && rawQ.nextStartLineObj.colMeta.streamIndex === seg.streamIndex) {
-            // 다음 문항이 같은 컬럼에 있으면 다음 문항 시작 바로 위까지 스캔
             diagBottomY = rawQ.nextStartLineObj.y + 14;
           } else {
-            // 그림이 컬럼 바닥까지 이어지고 선택지 ①이 다음 컬럼/페이지에 있는 경우 컬럼 하단 끝까지 스캔
             diagBottomY = seg.page.height ? 32 : seg.bottomY;
           }
 
           const spanHeight = diagTopY - diagBottomY;
           if (spanHeight >= 26) {
-            // 같은 세그먼트 내 텍스트 줄 간 최대 수직 공백도 함께 확인
             let maxGap = 0;
             for (let i = 0; i < segLines.length - 1; i++) {
               if (segLines[i].text.includes("①")) break;
@@ -1856,7 +2472,6 @@ print(rst)</code></pre>
               if (gap > maxGap) maxGap = gap;
             }
 
-            // 세그먼트에 텍스트 줄이 거의 없거나(이미지 전용 상단 영역), 줄 간격/스팬이 충분할 때 잉크 바운딩 박스 검출
             const isCrossColumnVisualSpan = !seg.isFirst || !opt1Line || (opt1Line.colMeta && opt1Line.colMeta.streamIndex > seg.streamIndex);
             const minGapThreshold = seg.page.hasGraphicOps ? 20 : 28;
 
@@ -1877,7 +2492,6 @@ print(rst)</code></pre>
         const lines = beforeOptions.split("\n").map(l => l.trim()).filter(Boolean);
 
         if (lines.length > 1) {
-          // 첫 줄(또는 물음표/콜론으로 끝나는 질문 문장)과 나머지 줄 분리
           let splitIdx = 1;
           for (let i = 0; i < lines.length - 1; i++) {
             if (/[?:>]$/.test(lines[i])) {
@@ -1890,13 +2504,11 @@ print(rst)</code></pre>
 
           if (restLines.length > 0 && isExplicitBoxContent(restLines)) {
             questionText = joinWrappedProseLines(stemLines);
-            // 이미 고해상도 그림/도표 이미지가 자동 추출된 경우 중복 텍스트 박스는 생략
             if (!hasAutoImage) {
               const boxContent = restLines.join("\n");
               mediaHtml += `<div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm whitespace-pre-line leading-relaxed text-slate-800">${escapeHtml(boxContent)}</div>`;
             }
           } else {
-            // 단순 줄바꿈으로 나뉜 문장은 네모 박스에 넣지 않고 자연스러운 본문으로 연결
             questionText = joinWrappedProseLines(lines);
           }
         } else {
@@ -1910,7 +2522,6 @@ print(rst)</code></pre>
           stripComcbtBoilerplate(text.slice(idx4 + 1).replace(/\n/g, " "))
         ];
       } else {
-        // 원문자 ①~④ 대신 1) 2) 3) 4) 형식인 경우 보조 처리
         const altMatch = text.match(/([\s\S]+?)\s*1\)\s*([\s\S]+?)\s*2\)\s*([\s\S]+?)\s*3\)\s*([\s\S]+?)\s*4\)\s*([\s\S]+)/);
         if (altMatch) {
           questionText = joinWrappedProseLines(altMatch[1].split("\n"));
@@ -1925,7 +2536,6 @@ print(rst)</code></pre>
         }
       }
 
-      // 자동 추출된 그림/도표/수식 이미지가 있으면 높이 제한 없이 순차적으로 전체 원본 비율 그대로 표시
       if (hasAutoImage) {
         const imgsMarkup = diagramImages
           .map(
@@ -1964,15 +2574,12 @@ print(rst)</code></pre>
 
     /**
      * 2D 좌표 기반 정답표 추출기
-     * - 마지막 1~2페이지의 표(Grid)에서 문제 번호 행(1~10, 11~20 등)과 바로 아래 정답 행(1~4, ①~④ 또는 "4212132331" 문자열)을 x좌표 근접도로 매칭
      */
     function extractAnswerKeyFrom2D(pagesData) {
       const answerMap = new Map();
-      // 정답표는 주로 마지막 페이지(또는 마지막 2페이지)에 위치
       const candidatePages = pagesData.slice(-2).reverse();
 
       for (const page of candidatePages) {
-        // y좌표 기준 행 클러스터링 (허용 오차 7pt)
         const sorted = [...page.tokens].sort((a, b) => b.y - a.y || a.x - b.x);
         const rows = [];
 
@@ -1987,13 +2594,11 @@ print(rst)</code></pre>
 
         rows.forEach(r => r.tokens.sort((a, b) => a.x - b.x));
 
-        // 각 행에서 문항 번호 토큰(1~100 정수) 추출
         for (let rIdx = 0; rIdx < rows.length - 1; rIdx++) {
           const headerRow = rows[rIdx];
           const qNumTokens = [];
 
           for (const tok of headerRow.tokens) {
-            // 한 토큰에 여러 숫자가 붙어있는 경우 분리 (예: "1 2 3 4 5")
             const parts = tok.str.split(/\s+/);
             if (parts.length > 1 && parts.every(p => /^\d{1,3}$/.test(p))) {
               const stepW = (tok.w || parts.length * 18) / parts.length;
@@ -2011,17 +2616,14 @@ print(rst)</code></pre>
             }
           }
 
-          // 한 행에 최소 4개 이상의 문항 번호가 발견되면 정답표의 "문제번호 행"으로 간주
           if (qNumTokens.length < 4) continue;
 
-          // 바로 아래 행(또는 y거리 45pt 이내 다음 행)에서 정답 토큰 수집
           const answerRow = rows[rIdx + 1];
           if (!answerRow || Math.abs(headerRow.y - answerRow.y) > 55) continue;
 
           const ansTokens = [];
           for (const tok of answerRow.tokens) {
             const cleanStr = tok.str.replace(/\s+/g, "");
-            // 케이스 A: "4212132331" 처럼 1~4 숫자가 연속 문자열로 붙어 있는 경우
             if (/^[1-4①②③④]{4,20}$/.test(cleanStr)) {
               const chars = [...cleanStr];
               const stepW = (tok.w || chars.length * 14) / chars.length;
@@ -2030,7 +2632,6 @@ print(rst)</code></pre>
                 if (val) ansTokens.push({ val, x: tok.x + idx * stepW });
               });
             } else {
-              // 케이스 B: 공백 분리 또는 단일 정답 토큰 ("4", "②", "4 2 1 2")
               const parts = tok.str.split(/\s+/);
               const stepW = (tok.w || parts.length * 16) / parts.length;
               parts.forEach((p, idx) => {
@@ -2042,7 +2643,6 @@ print(rst)</code></pre>
 
           if (ansTokens.length === 0) continue;
 
-          // 문항 번호 개수와 정답 토큰 개수가 정확히 일치하면 순서대로 1:1 매핑 (가장 정확)
           if (qNumTokens.length === ansTokens.length) {
             qNumTokens.forEach((qTok, i) => {
               if (!answerMap.has(qTok.num)) {
@@ -2050,7 +2650,6 @@ print(rst)</code></pre>
               }
             });
           } else {
-            // 개수가 다를 경우(일부 셀 병합/누락) x좌표가 가장 가까운 정답 토큰과 매칭
             for (const qTok of qNumTokens) {
               let bestAns = null;
               let minDist = Infinity;
@@ -2071,7 +2670,6 @@ print(rst)</code></pre>
         if (answerMap.size >= 10) break;
       }
 
-      // 보조 폴백: 텍스트 내 연속된 1~4 숫자열(예: 10자리씩 2줄 = 20문항, 20자리씩 5줄 = 100문항) 탐지
       if (answerMap.size < 5) {
         const lastPage = pagesData[pagesData.length - 1];
         if (lastPage) {
@@ -2107,9 +2705,6 @@ print(rst)</code></pre>
         .replace(/"/g, "&quot;");
     }
 
-    /**
-     * 단순 줄바꿈으로 나뉜 한국어/영문 지문 줄들을 자연스러운 한 문장으로 병합
-     */
     function joinWrappedProseLines(lines) {
       const cleaned = lines.map(l => l.trim()).filter(Boolean);
       if (cleaned.length === 0) return "";
@@ -2118,7 +2713,6 @@ print(rst)</code></pre>
       let merged = cleaned[0];
       for (let i = 1; i < cleaned.length; i++) {
         const next = cleaned[i];
-        // 앞 줄 끝이 하이픈이거나 조사/어미가 중간에 잘린 경우 공백 없이 붙이고, 그 외엔 공백 1칸 삽입
         if (merged.endsWith("-")) {
           merged = merged.slice(0, -1) + next;
         } else if (/^[은는이가을를의에와과도만로으로이며고서]$/.test(next[0]) && next.length <= 4) {
@@ -2130,34 +2724,24 @@ print(rst)</code></pre>
       return merged.replace(/\s+/g, " ").trim();
     }
 
-    /**
-     * 네모 박스(<보기>, ㄱ/ㄴ/ㄷ 나열, 코드, 표 등)로 감싸야 하는 명확한 구조적 본문인지 판별
-     */
     function isExplicitBoxContent(lines) {
       if (!lines || lines.length === 0) return false;
       const joined = lines.join("\n");
 
-      // 1. <보기> / [보기] 헤더가 포함된 경우
       if (/^[<\[【]?\s*보\s*기\s*[>\]】]?/.test(lines[0])) return true;
 
-      // 2. ㄱ. ㄴ. ㄷ. ㄹ. 항목이 2개 이상 나열된 경우
       const ganadaCount = lines.filter(l => /^[ㄱ-ㅎ]\s*[\.．\)]/.test(l)).length;
       if (ganadaCount >= 2) return true;
 
-      // 3. 프로그래밍 코드/SQL 패턴이 감지된 경우
       if (/(#include|int\s+main|printf\s*\(|def\s+\w+|print\s*\(|public\s+static|SELECT\s+.+\s+FROM|CREATE\s+TABLE|\{\s*$|\}\s*$|;\s*$)/m.test(joined)) {
         return true;
       }
 
-      // 4. 표 구분자(|)가 여러 줄에 걸쳐 존재하는 경우
       if (lines.filter(l => l.includes("|")).length >= 2) return true;
 
       return false;
     }
 
-    /**
-     * PDF 페이지의 특정 컬럼(left/right) 및 PDF y좌표 구간(topY ~ bottomY)을 이미지 DataURL로 크롭
-     */
     function cropPdfRegion(page, col, pdfTopY, pdfBottomY) {
       if (!page || !page.canvas) return null;
       const scale = page.scale || 2.0;
@@ -2170,7 +2754,6 @@ print(rst)</code></pre>
       const clampedBottom = Math.min(page.height - 10, Math.max(10, pdfBottomY));
       if (clampedTop - clampedBottom < 12) return null;
 
-      // PDF 좌표계(좌하단 원점) -> Canvas 픽셀 좌표계(좌상단 원점) 변환
       const sx = Math.max(0, Math.floor(xStartPdf * scale));
       const sw = Math.min(page.canvas.width - sx, Math.floor((xEndPdf - xStartPdf) * scale));
       const sy = Math.max(0, Math.floor((page.height - clampedTop) * scale));
@@ -2185,12 +2768,10 @@ print(rst)</code></pre>
       outCtx.fillStyle = "#ffffff";
       outCtx.fillRect(0, 0, sw, sh);
       outCtx.drawImage(page.canvas, sx, sy, sw, sh, 0, 0, sw, sh);
-      return outCanvas.toDataURL("image/png");
+      // JPEG 0.88 품질로 용량을 줄여 IndexedDB와 GitHub Gist 동기화 속도 최적화
+      return outCanvas.toDataURL("image/jpeg", 0.88);
     }
 
-    /**
-     * 문항 내 다이어그램/그림/4분할 그래프 구간의 실제 비백색(잉크) 픽셀 바운딩 박스를 탐지하여 타이트하게 크롭
-     */
     function analyzeMediaRegionInk(page, col, pdfTopY, pdfBottomY) {
       const emptyResult = { hasVisualContent: false, dataUrl: null };
       if (!page || !page.canvas) return emptyResult;
@@ -2227,7 +2808,6 @@ print(rst)</code></pre>
             const r = imgData[idx];
             const g = imgData[idx + 1];
             const b = imgData[idx + 2];
-            // 흰색 배경이 아닌 픽셀(선, 도형, 텍스트 라벨, 음영 등) 감지
             if (r < 235 || g < 235 || b < 235) {
               inkPixels++;
               if (y < minInkY) minInkY = y;
@@ -2243,12 +2823,10 @@ print(rst)</code></pre>
         const totalPixels = sw * sh;
         const inkRatio = inkPixels / totalPixels;
 
-        // 최소 크기 및 잉크 밀도 검증 (단순 점이나 빈 공백 제외)
         if (maxInkY <= minInkY || inkHeight < 28 || inkWidth < 30 || inkRatio < 0.004) {
           return emptyResult;
         }
 
-        // 상하좌우 여유 패딩을 더해 타이트하게 크롭
         const pad = 10;
         const cropX = Math.max(0, sx + minInkX - pad);
         const cropY = Math.max(0, sy + minInkY - pad);
@@ -2273,7 +2851,6 @@ print(rst)</code></pre>
       }
     }
 
-    // 1단 레이아웃 등 예외 케이스용 정규식 폴백 파서
     function parseFlatRegexQuestions(cleaned, answerMap) {
       const questions = [];
       const qRegex = /(?:^|\s)(\d{1,3})\.\s+(.+?)\s*①\s*(.+?)\s*②\s*(.+?)\s*③\s*(.+?)\s*④\s*(.+?)(?=\s+\d{1,3}\.\s+|\s+전자문제집\s+CBT|$)/g;
@@ -2305,9 +2882,15 @@ print(rst)</code></pre>
       return questions;
     }
 
-    // 초기 렌더링 실행
-    window.addEventListener("DOMContentLoaded", () => {
+    // 앱 초기화: IndexedDB 로컬 기록 로드 -> 화면 렌더링 -> 자동 동기화 설정 시 Gist 최신 상태 확인
+    window.addEventListener("DOMContentLoaded", async () => {
+      loadSyncConfig();
       renderQuestion();
+      await loadLibraryFromIDB();
+
+      if (syncConfig.autoSync && syncConfig.token && syncConfig.gistId) {
+        pullFromGitHubGist(true);
+      }
     });
   </script>
 </body>
