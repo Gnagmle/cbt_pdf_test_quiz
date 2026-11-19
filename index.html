@@ -51,6 +51,78 @@
     .pb-safe {
       padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.65rem);
     }
+    /* AI 마크다운 해설 렌더링 스타일 */
+    .ai-markdown h1, .ai-markdown h2, .ai-markdown h3, .ai-markdown h4 {
+      font-weight: 700;
+      color: #312e81;
+      margin-top: 0.9rem;
+      margin-bottom: 0.4rem;
+      line-height: 1.4;
+    }
+    .ai-markdown h1:first-child, .ai-markdown h2:first-child, .ai-markdown h3:first-child {
+      margin-top: 0;
+    }
+    .ai-markdown h2 { font-size: 0.98rem; }
+    .ai-markdown h3 { font-size: 0.92rem; }
+    .ai-markdown p {
+      margin-bottom: 0.55rem;
+      line-height: 1.7;
+    }
+    .ai-markdown p:last-child { margin-bottom: 0; }
+    .ai-markdown ul, .ai-markdown ol {
+      margin: 0.4rem 0 0.65rem 1.25rem;
+      line-height: 1.65;
+    }
+    .ai-markdown ul { list-style-type: disc; }
+    .ai-markdown ol { list-style-type: decimal; }
+    .ai-markdown li { margin-bottom: 0.25rem; }
+    .ai-markdown strong {
+      font-weight: 700;
+      color: #1e1b4b;
+    }
+    .ai-markdown code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82em;
+      background-color: #eef2ff;
+      color: #3730a3;
+      padding: 0.1rem 0.35rem;
+      border-radius: 0.35rem;
+    }
+    .ai-markdown pre {
+      background-color: #0f172a;
+      color: #f1f5f9;
+      padding: 0.85rem 1rem;
+      border-radius: 0.75rem;
+      overflow-x: auto;
+      margin: 0.6rem 0;
+      font-size: 0.8rem;
+      line-height: 1.6;
+    }
+    .ai-markdown pre code {
+      background-color: transparent;
+      color: inherit;
+      padding: 0;
+      font-size: inherit;
+    }
+    .ai-markdown table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.65rem 0;
+      font-size: 0.82rem;
+      background-color: #ffffff;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+    .ai-markdown th, .ai-markdown td {
+      border: 1px solid #cbd5e1;
+      padding: 0.4rem 0.6rem;
+      text-align: left;
+    }
+    .ai-markdown th {
+      background-color: #f1f5f9;
+      font-weight: 700;
+      color: #1e293b;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-indigo-100 selection:text-indigo-900 pb-20 sm:pb-0">
@@ -79,6 +151,13 @@
 
       <!-- 우측 컨트롤 버튼 그룹 -->
       <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+        <!-- AI 해설 설정 버튼 -->
+        <button id="open-ai-modal-btn" type="button" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-violet-50 hover:bg-violet-100 text-violet-800 transition border border-violet-200" title="AI API 키 및 호출 모델 설정">
+          <span id="ai-status-dot" class="w-2 h-2 rounded-full bg-slate-400 shrink-0 transition-colors"></span>
+          <span class="hidden md:inline">✨ AI 해설 설정</span>
+          <span class="md:hidden">✨ AI 설정</span>
+        </button>
+
         <!-- 클라우드 동기화 (GitHub Gist) 버튼 -->
         <button id="open-sync-modal-btn" type="button" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-sky-50 hover:bg-sky-100 text-sky-800 transition border border-sky-200" title="PC·휴대폰 기기 간 GitHub Gist 동기화">
           <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -218,7 +297,10 @@
           <h2 id="question-text" class="text-base sm:text-lg font-bold text-slate-900 leading-relaxed flex-1">
             <!-- 문제 텍스트가 여기에 렌더링됩니다 -->
           </h2>
-          <div class="flex items-center gap-1.5 self-start shrink-0">
+          <div class="flex items-center gap-1.5 self-start shrink-0 flex-wrap">
+            <button id="header-ai-explain-btn" type="button" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 transition" title="설정한 AI 모델로 현재 문항 풀이 및 해설 생성">
+              <span id="header-ai-explain-text">✨ AI 해설</span>
+            </button>
             <button id="clear-current-answer-btn" type="button" class="hidden inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition" title="현재 문항 선택 취소 (Backspace)">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -256,8 +338,66 @@
                 <span class="text-[11px] font-medium text-slate-500">다른 보기를 눌러 변경 · 같은 보기 재클릭 시 취소</span>
               </div>
               <p id="feedback-explanation" class="text-sm leading-relaxed text-slate-700 whitespace-pre-line"></p>
+              <div class="mt-3 pt-3 border-t border-slate-200/70 flex flex-wrap items-center justify-between gap-2">
+                <span class="text-[11px] text-slate-500">더 자세한 풀이·오답 선지 분석이 필요하신가요?</span>
+                <button id="feedback-ai-explain-btn" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white shadow-2xs transition">
+                  <span id="feedback-ai-explain-text">✨ AI 풀이 및 해설 생성</span>
+                </button>
+              </div>
             </div>
           </div>
+        </div>
+
+        <!-- AI 풀이 및 해설 표시 카드 -->
+        <div id="ai-explanation-card" class="hidden mt-4 rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50/80 via-white to-indigo-50/50 p-4 sm:p-5 shadow-2xs animate-fade-in">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-violet-200/70">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-violet-600 text-white text-xs font-bold shrink-0">AI</span>
+              <div class="min-w-0">
+                <h4 class="text-sm font-bold text-violet-950 leading-tight">AI 상세 풀이 및 해설</h4>
+                <p id="ai-explanation-meta" class="text-[11px] text-violet-600 truncate"></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button id="ai-regenerate-btn" type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white hover:bg-violet-50 text-violet-700 border border-violet-200 transition">
+                🔄 재생성
+              </button>
+              <button id="ai-copy-btn" type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 transition">
+                복사
+              </button>
+              <button id="ai-delete-btn" type="button" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 transition">
+                삭제
+              </button>
+            </div>
+          </div>
+
+          <!-- 로딩 상태 -->
+          <div id="ai-loading-box" class="hidden py-4 space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 text-sm font-semibold text-violet-800">
+                <svg class="w-4 h-4 animate-spin text-violet-600 shrink-0" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+                <span id="ai-loading-text">AI 모델로 해설 생성 중...</span>
+              </div>
+              <button id="ai-abort-single-btn" type="button" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition">
+                중단
+              </button>
+            </div>
+            <div class="space-y-2 animate-pulse">
+              <div class="h-3 bg-violet-200/70 rounded w-1/3"></div>
+              <div class="h-3 bg-violet-100 rounded w-full"></div>
+              <div class="h-3 bg-violet-100 rounded w-5/6"></div>
+              <div class="h-3 bg-violet-100 rounded w-2/3"></div>
+            </div>
+          </div>
+
+          <!-- 오류 표시 -->
+          <div id="ai-error-box" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs sm:text-sm text-rose-800 leading-relaxed"></div>
+
+          <!-- 마크다운 해설 본문 -->
+          <div id="ai-explanation-content" class="ai-markdown text-sm text-slate-800"></div>
         </div>
       </div>
 
@@ -315,6 +455,39 @@
         <button id="back-to-quiz-btn" type="button" class="px-5 py-3 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition">
           문제로 돌아가기
         </button>
+      </div>
+
+      <!-- 결과 화면 AI 해설 일괄 생성 바 -->
+      <div id="result-batch-ai-card" class="mb-6 p-4 sm:p-5 rounded-2xl border border-violet-200 bg-violet-50/60">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-sm font-bold text-violet-950 flex items-center gap-1.5">
+              <span>✨ AI 해설 일괄 생성</span>
+            </h3>
+            <p class="text-xs text-violet-700 mt-0.5">생성된 해설은 IndexedDB 및 GitHub Gist에 저장되어 PC·휴대폰에서 재사용됩니다.</p>
+          </div>
+          <div class="flex flex-wrap gap-2 shrink-0">
+            <button id="result-batch-wrong-btn" type="button" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white shadow-2xs transition">
+              틀린 문제 AI 해설 일괄 생성
+            </button>
+            <button id="result-batch-all-btn" type="button" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white hover:bg-violet-100 text-violet-800 border border-violet-300 transition">
+              전체 일괄 생성 (미생성만)
+            </button>
+          </div>
+        </div>
+
+        <!-- 일괄 생성 진행률 바 -->
+        <div id="result-batch-progress" class="hidden mt-3.5 pt-3.5 border-t border-violet-200/80 space-y-2">
+          <div class="flex items-center justify-between gap-2 text-xs font-semibold text-violet-900">
+            <span id="result-batch-status">0 / 0 생성 중...</span>
+            <button id="result-batch-abort-btn" type="button" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-100 hover:bg-rose-200 text-rose-800 transition">
+              중단
+            </button>
+          </div>
+          <div class="w-full bg-violet-200/70 h-2 rounded-full overflow-hidden">
+            <div id="result-batch-bar" class="bg-violet-600 h-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
       </div>
 
       <!-- 결과 화면 문항 번호 그리드 (클릭 시 해당 문항으로 이동해 재풀이/답안 변경) -->
@@ -536,6 +709,146 @@
         <button id="cancel-reset-modal-btn" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-200 transition">
           취소
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI API 키 및 모델 설정 모달 -->
+  <div id="ai-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full shadow-xl border border-slate-200 overflow-hidden animate-fade-in">
+      <div class="px-5 sm:px-6 py-4 bg-violet-50 border-b border-violet-100 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-1.5">
+            <span>✨ AI 풀이 및 해설 API 설정</span>
+          </h3>
+          <p class="text-xs text-slate-600 mt-0.5">본인의 AI API 키와 원하는 모델을 입력해 문제 풀이·선지 분석 해설을 생성합니다.</p>
+        </div>
+        <button id="close-ai-modal-btn" type="button" class="text-slate-400 hover:text-slate-600 p-2 rounded-lg">✕</button>
+      </div>
+
+      <div class="p-5 sm:p-6 space-y-4 max-h-[78vh] overflow-y-auto">
+        <!-- 보안 안내 배너 -->
+        <div class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900 leading-relaxed flex items-start gap-2">
+          <span class="shrink-0 mt-0.5">🔒</span>
+          <span><strong>보안 안내:</strong> API 키는 현재 기기의 브라우저(localStorage)에만 저장되며 GitHub Gist에는 업로드되지 않습니다. (생성된 해설 텍스트만 기기 간 동기화됩니다.)</span>
+        </div>
+
+        <!-- 제공자 선택 -->
+        <div>
+          <label for="ai-provider-select" class="block text-xs font-bold text-slate-700 mb-1.5">
+            AI 제공자 (Provider)
+          </label>
+          <select id="ai-provider-select" class="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-violet-500 font-medium text-slate-800">
+            <option value="gemini">Google Gemini (Direct REST API)</option>
+            <option value="openai">OpenAI / 호환 API (OpenRouter, Groq, Ollama 등)</option>
+            <option value="claude">Anthropic Claude (Direct Browser API)</option>
+          </select>
+        </div>
+
+        <!-- API 키 입력 -->
+        <div>
+          <label for="ai-api-key-input" class="block text-xs font-bold text-slate-700 mb-1">
+            API Key
+          </label>
+          <div class="relative flex items-center">
+            <input id="ai-api-key-input" type="password" placeholder="API 키를 입력하세요" autocomplete="off" class="w-full pl-3.5 pr-11 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-violet-500 code-font" />
+            <button id="toggle-ai-key-vis-btn" type="button" class="absolute right-2 p-1.5 text-slate-400 hover:text-slate-700 rounded-lg transition" title="API 키 보기/숨기기">
+              <svg id="ai-key-eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 호출 모델 입력 + 빠른 프리셋 칩 -->
+        <div>
+          <label for="ai-model-input" class="block text-xs font-bold text-slate-700 mb-1">
+            호출 모델명 (Model ID 직접 입력 또는 프리셋 선택)
+          </label>
+          <input id="ai-model-input" type="text" placeholder="예: gemini-2.5-flash" autocomplete="off" class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-violet-500 code-font" />
+          <div id="ai-model-presets" class="flex flex-wrap gap-1.5 mt-2"></div>
+        </div>
+
+        <!-- Custom Base URL -->
+        <div id="ai-base-url-group">
+          <div class="flex items-center justify-between mb-1">
+            <label for="ai-base-url-input" class="block text-xs font-bold text-slate-700">
+              API Endpoint / Custom Base URL <span id="ai-base-url-hint" class="font-normal text-slate-400">(선택 사항)</span>
+            </label>
+            <button id="reset-base-url-btn" type="button" class="text-[11px] font-semibold text-violet-600 hover:text-violet-800">
+              기본값 복원
+            </button>
+          </div>
+          <input id="ai-base-url-input" type="text" placeholder="기본 엔드포인트 사용" autocomplete="off" class="w-full px-3.5 py-2 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:border-violet-500 code-font" />
+        </div>
+
+        <!-- 추가 옵션 (멀티모달 이미지 전송 / 해설 스타일) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 bg-slate-50/80 cursor-pointer">
+            <input id="ai-send-images-checkbox" type="checkbox" checked class="w-4 h-4 mt-0.5 accent-violet-600 rounded shrink-0" />
+            <div>
+              <div class="text-xs font-bold text-slate-800">문제 이미지 함께 전송</div>
+              <div class="text-[11px] text-slate-500 leading-snug mt-0.5">PDF 그림·도표 및 SVG를 멀티모달 모델에 첨부</div>
+            </div>
+          </label>
+
+          <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/80">
+            <label for="ai-style-select" class="block text-xs font-bold text-slate-800 mb-1.5">해설 스타일</label>
+            <select id="ai-style-select" class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-violet-500 font-medium text-slate-700">
+              <option value="detailed">상세 해설 (정답 + 모든 오답 선지 분석 + 핵심 개념)</option>
+              <option value="concise">핵심 요약 (빠르게)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 연결 테스트 영역 -->
+        <div class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div id="ai-test-status" class="text-xs text-slate-600 flex-1 min-w-0">
+            연결 테스트 버튼으로 API 키와 모델 응답을 바로 확인할 수 있습니다.
+          </div>
+          <button id="ai-test-btn" type="button" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-900 text-white shrink-0 transition">
+            연결 테스트
+          </button>
+        </div>
+
+        <!-- 현재 시험 일괄 해설 생성 섹션 -->
+        <div class="p-3.5 rounded-xl bg-violet-50/70 border border-violet-200 space-y-2.5">
+          <div class="text-xs font-bold text-violet-950">현재 회차 AI 해설 일괄 생성</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button id="modal-batch-wrong-btn" type="button" class="py-2 px-3 rounded-xl text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white transition">
+              틀린 문제만 일괄 생성
+            </button>
+            <button id="modal-batch-all-btn" type="button" class="py-2 px-3 rounded-xl text-xs font-bold bg-white hover:bg-violet-100 text-violet-800 border border-violet-300 transition">
+              전체 문항 일괄 생성 (미생성만)
+            </button>
+          </div>
+          <div id="modal-batch-progress" class="hidden space-y-1.5 pt-1">
+            <div class="flex items-center justify-between text-xs font-semibold text-violet-900">
+              <span id="modal-batch-status">준비 중...</span>
+              <button id="modal-batch-abort-btn" type="button" class="px-2 py-0.5 rounded bg-rose-100 hover:bg-rose-200 text-rose-800 text-[11px] font-bold">
+                중단
+              </button>
+            </div>
+            <div class="w-full bg-violet-200 h-1.5 rounded-full overflow-hidden">
+              <div id="modal-batch-bar" class="bg-violet-600 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-5 sm:px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2">
+        <button id="reset-ai-settings-btn" type="button" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition">
+          설정 초기화
+        </button>
+        <div class="flex items-center gap-2">
+          <button id="save-ai-settings-btn" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-violet-600 hover:bg-violet-700 text-white shadow-2xs transition">
+            설정 저장
+          </button>
+          <button id="done-ai-modal-btn" type="button" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-200 transition">
+            닫기
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1135,6 +1448,86 @@ print(rst)</code></pre>
     }
 
     /**
+     * AI API 키 및 모델 설정 (현재 기기 localStorage 전용 — GitHub Gist에는 절대 업로드하지 않음)
+     */
+    const AI_CONFIG_STORAGE_KEY = "cbt_ai_provider_config_v1";
+    const AI_PROVIDER_PRESETS = {
+      gemini: {
+        label: "Google Gemini",
+        defaultModel: "gemini-2.5-flash",
+        models: ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"],
+        defaultBaseUrl: "",
+        baseUrlPlaceholder: "비워두면 기본 Gemini API 사용 (프록시 사용 시 Base URL 입력)",
+        keyPlaceholder: "AIzaSy..."
+      },
+      openai: {
+        label: "OpenAI / 호환 API",
+        defaultModel: "gpt-4o-mini",
+        models: ["gpt-4o-mini", "gpt-4o", "o3-mini"],
+        defaultBaseUrl: "https://api.openai.com/v1/chat/completions",
+        baseUrlPlaceholder: "https://api.openai.com/v1/chat/completions (OpenRouter·Groq·Ollama URL 입력 가능)",
+        keyPlaceholder: "sk-..."
+      },
+      claude: {
+        label: "Anthropic Claude",
+        defaultModel: "claude-3-5-sonnet-latest",
+        models: ["claude-3-5-haiku-latest", "claude-3-5-sonnet-latest"],
+        defaultBaseUrl: "https://api.anthropic.com/v1/messages",
+        baseUrlPlaceholder: "https://api.anthropic.com/v1/messages",
+        keyPlaceholder: "sk-ant-..."
+      }
+    };
+
+    let aiConfig = {
+      provider: "gemini",
+      apiKey: "",
+      model: "gemini-2.5-flash",
+      baseUrl: "",
+      sendImages: true,
+      style: "detailed"
+    };
+
+    let activeSingleAiAbort = null;
+    let activeSingleAiQuestionIdx = null;
+    let activeBatchAbort = null;
+    let isBatchRunning = false;
+
+    function loadAiConfig() {
+      try {
+        const saved = localStorage.getItem(AI_CONFIG_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          aiConfig = { ...aiConfig, ...parsed };
+        }
+      } catch (_) {}
+    }
+
+    function saveAiConfig() {
+      try {
+        localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(aiConfig));
+      } catch (_) {}
+      updateAiStatusDot();
+    }
+
+    function isAiConfigured() {
+      const modelOk = Boolean((aiConfig.model || "").trim());
+      const keyOk = Boolean((aiConfig.apiKey || "").trim());
+      const isLocalOpenAi =
+        aiConfig.provider === "openai" &&
+        /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test((aiConfig.baseUrl || "").trim());
+      return modelOk && (keyOk || isLocalOpenAi);
+    }
+
+    function updateAiStatusDot() {
+      if (!els.aiStatusDot) return;
+      if (isAiConfigured()) {
+        els.aiStatusDot.className = "w-2 h-2 rounded-full bg-emerald-500 shrink-0 transition-colors";
+      } else {
+        els.aiStatusDot.className = "w-2 h-2 rounded-full bg-slate-400 shrink-0 transition-colors";
+      }
+    }
+
+    /**
      * IndexedDB 오프라인 영구 저장소 (대용량 크롭 이미지 및 다수 회차 기출문제 안전 보관)
      */
     const IDB_NAME = "CivilServiceCBT_DB";
@@ -1299,7 +1692,52 @@ print(rst)</code></pre>
       resetCurrentBadge: document.getElementById("reset-current-badge"),
       resetAllBtn: document.getElementById("reset-all-btn"),
       resetWrongBtn: document.getElementById("reset-wrong-btn"),
-      resetCurrentBtn: document.getElementById("reset-current-btn")
+      resetCurrentBtn: document.getElementById("reset-current-btn"),
+      openAiModalBtn: document.getElementById("open-ai-modal-btn"),
+      aiStatusDot: document.getElementById("ai-status-dot"),
+      headerAiExplainBtn: document.getElementById("header-ai-explain-btn"),
+      headerAiExplainText: document.getElementById("header-ai-explain-text"),
+      feedbackAiExplainBtn: document.getElementById("feedback-ai-explain-btn"),
+      feedbackAiExplainText: document.getElementById("feedback-ai-explain-text"),
+      aiExplanationCard: document.getElementById("ai-explanation-card"),
+      aiExplanationMeta: document.getElementById("ai-explanation-meta"),
+      aiRegenerateBtn: document.getElementById("ai-regenerate-btn"),
+      aiCopyBtn: document.getElementById("ai-copy-btn"),
+      aiDeleteBtn: document.getElementById("ai-delete-btn"),
+      aiLoadingBox: document.getElementById("ai-loading-box"),
+      aiLoadingText: document.getElementById("ai-loading-text"),
+      aiAbortSingleBtn: document.getElementById("ai-abort-single-btn"),
+      aiErrorBox: document.getElementById("ai-error-box"),
+      aiExplanationContent: document.getElementById("ai-explanation-content"),
+      resultBatchWrongBtn: document.getElementById("result-batch-wrong-btn"),
+      resultBatchAllBtn: document.getElementById("result-batch-all-btn"),
+      resultBatchProgress: document.getElementById("result-batch-progress"),
+      resultBatchStatus: document.getElementById("result-batch-status"),
+      resultBatchBar: document.getElementById("result-batch-bar"),
+      resultBatchAbortBtn: document.getElementById("result-batch-abort-btn"),
+      aiModal: document.getElementById("ai-modal"),
+      closeAiModalBtn: document.getElementById("close-ai-modal-btn"),
+      doneAiModalBtn: document.getElementById("done-ai-modal-btn"),
+      aiProviderSelect: document.getElementById("ai-provider-select"),
+      aiApiKeyInput: document.getElementById("ai-api-key-input"),
+      toggleAiKeyVisBtn: document.getElementById("toggle-ai-key-vis-btn"),
+      aiModelInput: document.getElementById("ai-model-input"),
+      aiModelPresets: document.getElementById("ai-model-presets"),
+      aiBaseUrlInput: document.getElementById("ai-base-url-input"),
+      aiBaseUrlHint: document.getElementById("ai-base-url-hint"),
+      resetBaseUrlBtn: document.getElementById("reset-base-url-btn"),
+      aiSendImagesCheckbox: document.getElementById("ai-send-images-checkbox"),
+      aiStyleSelect: document.getElementById("ai-style-select"),
+      aiTestStatus: document.getElementById("ai-test-status"),
+      aiTestBtn: document.getElementById("ai-test-btn"),
+      modalBatchWrongBtn: document.getElementById("modal-batch-wrong-btn"),
+      modalBatchAllBtn: document.getElementById("modal-batch-all-btn"),
+      modalBatchProgress: document.getElementById("modal-batch-progress"),
+      modalBatchStatus: document.getElementById("modal-batch-status"),
+      modalBatchBar: document.getElementById("modal-batch-bar"),
+      modalBatchAbortBtn: document.getElementById("modal-batch-abort-btn"),
+      resetAiSettingsBtn: document.getElementById("reset-ai-settings-btn"),
+      saveAiSettingsBtn: document.getElementById("save-ai-settings-btn")
     };
 
     // 알림 배너 표시 함수 (alert 대체)
@@ -1567,6 +2005,16 @@ print(rst)</code></pre>
         els.feedbackBox.classList.add("hidden");
       }
 
+      // AI 해설 버튼 라벨 및 AI 해설 카드 렌더링
+      const hasAiExp = Boolean(q.aiExplanation && q.aiExplanation.trim());
+      if (els.headerAiExplainText) {
+        els.headerAiExplainText.textContent = hasAiExp ? "✨ AI 해설 재생성" : "✨ AI 해설";
+      }
+      if (els.feedbackAiExplainText) {
+        els.feedbackAiExplainText.textContent = hasAiExp ? "🔄 AI 해설 재생성" : "✨ AI 풀이 및 해설 생성";
+      }
+      renderAiExplanationBox(q, idx);
+
       // 이전 / 다음 버튼 활성화 및 라벨 갱신 (PC · 모바일)
       const isFirst = idx === 0;
       const isLast = idx === total - 1;
@@ -1746,30 +2194,58 @@ print(rst)</code></pre>
         const statusBadgeClass = picked === null
           ? "bg-slate-200 text-slate-700"
           : (isCorrect ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800");
+        const hasAiExp = Boolean(q.aiExplanation && q.aiExplanation.trim());
+        const aiMetaText = q.aiExplanationMeta
+          ? `${q.aiExplanationMeta.model || "AI"}${q.aiExplanationMeta.createdAt ? " · " + q.aiExplanationMeta.createdAt : ""}`
+          : "AI 생성 해설";
 
         card.innerHTML = `
-          <div class="flex items-center justify-between gap-2 mb-2">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
             <div class="flex items-center gap-2">
               <span class="text-xs font-bold px-2.5 py-0.5 rounded-md ${statusBadgeClass}">
                 ${q.num}번 · ${statusLabel}
               </span>
-              <span class="text-xs text-slate-400">${q.category || ""}</span>
+              <span class="text-xs text-slate-400">${escapeHtml(q.category || "")}</span>
             </div>
-            <button type="button" data-jump-idx="${idx}" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition">
-              이 문항 다시 풀기
-            </button>
+            <div class="flex items-center gap-1.5">
+              <button type="button" data-ai-review-idx="${idx}" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 transition">
+                ${hasAiExp ? "🔄 AI 해설 재생성" : "✨ AI 해설 생성"}
+              </button>
+              <button type="button" data-jump-idx="${idx}" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition">
+                이 문항 다시 풀기
+              </button>
+            </div>
           </div>
-          <p class="text-sm font-bold text-slate-900 mb-3">${q.num}. ${q.question}</p>
+          <p class="text-sm font-bold text-slate-900 mb-3">${q.num}. ${escapeHtml(q.question)}</p>
           <div class="text-xs sm:text-sm space-y-1 mb-2.5">
-            <div class="${isCorrect ? "text-emerald-700" : "text-rose-700"} font-medium">• 내 선택: ${userText}</div>
-            <div class="text-emerald-700 font-bold">• 실제 정답: ${ansText}</div>
+            <div class="${isCorrect ? "text-emerald-700" : "text-rose-700"} font-medium">• 내 선택: ${escapeHtml(userText)}</div>
+            <div class="text-emerald-700 font-bold">• 실제 정답: ${escapeHtml(ansText)}</div>
           </div>
-          <p class="text-xs text-slate-600 bg-slate-100/80 p-3 rounded-lg leading-relaxed whitespace-pre-line">${q.explanation}</p>
+          <p class="text-xs text-slate-600 bg-slate-100/80 p-3 rounded-lg leading-relaxed whitespace-pre-line">${escapeHtml(q.explanation || "")}</p>
+          ${hasAiExp ? `
+            <div class="mt-3 p-3.5 rounded-xl bg-violet-50/70 border border-violet-200">
+              <div class="flex items-center justify-between gap-2 mb-2 pb-1.5 border-b border-violet-200/70">
+                <span class="text-xs font-bold text-violet-900">✨ AI 상세 해설</span>
+                <span class="text-[11px] text-violet-600">${escapeHtml(aiMetaText)}</span>
+              </div>
+              <div class="ai-markdown text-xs sm:text-sm text-slate-800">${renderSafeMarkdown(q.aiExplanation)}</div>
+            </div>
+          ` : ""}
         `;
 
         const jumpBtn = card.querySelector("[data-jump-idx]");
         if (jumpBtn) {
           jumpBtn.addEventListener("click", () => jumpToQuestion(idx));
+        }
+        const aiBtn = card.querySelector("[data-ai-review-idx]");
+        if (aiBtn) {
+          aiBtn.addEventListener("click", async () => {
+            if (!ensureAiConfiguredOrOpenModal()) return;
+            aiBtn.disabled = true;
+            aiBtn.textContent = "생성 중...";
+            await generateAiExplanationForIndex(idx, { force: true, silentToast: false });
+            renderReviewList();
+          });
         }
         els.reviewList.appendChild(card);
       });
@@ -1989,12 +2465,14 @@ print(rst)</code></pre>
       if (
         !els.answerModal.classList.contains("hidden") ||
         !els.syncModal.classList.contains("hidden") ||
-        !els.resetModal.classList.contains("hidden")
+        !els.resetModal.classList.contains("hidden") ||
+        !els.aiModal.classList.contains("hidden")
       ) {
         if (e.key === "Escape") {
           closeAnswerModal();
           closeSyncModal();
           closeResetModal();
+          closeAiModal();
         }
         return;
       }
@@ -3218,9 +3696,959 @@ print(rst)</code></pre>
       return questions;
     }
 
+    /**
+     * AI 풀이 및 해설 생성 엔진 (Google Gemini / OpenAI·호환 / Anthropic Claude)
+     */
+
+    // 안전한 클립보드 복사 헬퍼 (iFrame 호환 document.execCommand 사용)
+    function copyTextToClipboard(text) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.top = "-9999px";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      let copied = false;
+      try {
+        copied = document.execCommand("copy");
+      } catch (_) {
+        copied = false;
+      }
+      document.body.removeChild(textarea);
+      return copied;
+    }
+
+    // 경량 보안 마크다운 -> HTML 렌더러 (HTML 이스케이프 우선 적용)
+    function renderSafeMarkdown(rawMd) {
+      if (!rawMd) return "";
+      const codeBlocks = [];
+      // 1. 펜스 코드 블록 추출 및 보존 (리터럴 삼중 백틱 회피를 위해 \x60 사용)
+      const fenceRegex = new RegExp("\\x60{3}([\\w+-]*)\\r?\\n?([\\s\\S]*?)\\x60{3}", "g");
+      let processed = String(rawMd).replace(fenceRegex, (_, lang, code) => {
+        const placeholder = `@@CODEBLOCK_${codeBlocks.length}@@`;
+        codeBlocks.push(`<pre><code>${escapeHtml(code.replace(/\r?\n$/, ""))}</code></pre>`);
+        return placeholder;
+      });
+
+      // 2. 나머지 텍스트 전체 HTML 이스케이프
+      processed = escapeHtml(processed);
+
+      // 3. 인라인 포맷 변환 (인라인 코드, 굵게)
+      function formatInline(text) {
+        const inlineCodes = [];
+        const inlineRegex = new RegExp("\\x60([^\\x60\\n]+)\\x60", "g");
+        let out = text.replace(inlineRegex, (_, c) => {
+          const ph = `@@INLINECODE_${inlineCodes.length}@@`;
+          inlineCodes.push(`<code>${c}</code>`);
+          return ph;
+        });
+        out = out.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+        out = out.replace(/__(.+?)__/g, "<strong>$1</strong>");
+        inlineCodes.forEach((html, i) => {
+          out = out.replace(`@@INLINECODE_${i}@@`, html);
+        });
+        return out;
+      }
+
+      // 4. 줄 단위 블록 파싱 (제목, 표, 목록, 문단)
+      const lines = processed.split(/\r?\n/);
+      const htmlParts = [];
+      let inUl = false;
+      let inOl = false;
+      let i = 0;
+
+      const closeLists = () => {
+        if (inUl) { htmlParts.push("</ul>"); inUl = false; }
+        if (inOl) { htmlParts.push("</ol>"); inOl = false; }
+      };
+
+      while (i < lines.length) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          closeLists();
+          i++;
+          continue;
+        }
+
+        // 코드 블록 플레이스홀더 단독 줄
+        if (/^@@CODEBLOCK_\d+@@$/.test(trimmed)) {
+          closeLists();
+          htmlParts.push(trimmed);
+          i++;
+          continue;
+        }
+
+        // 간단한 마크다운 표 감지 (| 헤더 | 다음 줄 |---|)
+        if (
+          trimmed.startsWith("|") &&
+          i + 1 < lines.length &&
+          /^\s*\|?[\s:-]+\|[\s|:-]*$/.test(lines[i + 1].trim())
+        ) {
+          closeLists();
+          const parseRow = (r) =>
+            r.trim().replace(/^\||\|$/g, "").split("|").map(cell => formatInline(cell.trim()));
+          const headers = parseRow(trimmed);
+          let tableHtml = `<div class="overflow-x-auto"><table><thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>`;
+          i += 2;
+          while (i < lines.length && lines[i].trim().includes("|")) {
+            const cells = parseRow(lines[i]);
+            tableHtml += `<tr>${cells.map(c => `<td>${c}</td>`).join("")}</tr>`;
+            i++;
+          }
+          tableHtml += "</tbody></table></div>";
+          htmlParts.push(tableHtml);
+          continue;
+        }
+
+        // 제목 (# ~ ####)
+        const hMatch = trimmed.match(/^(#{1,4})\s+(.+)$/);
+        if (hMatch) {
+          closeLists();
+          const level = Math.min(4, Math.max(2, hMatch[1].length));
+          htmlParts.push(`<h${level}>${formatInline(hMatch[2])}</h${level}>`);
+          i++;
+          continue;
+        }
+
+        // 비순서 목록 (- 또는 * 또는 •)
+        const ulMatch = trimmed.match(/^[-*•]\s+(.+)$/);
+        if (ulMatch) {
+          if (inOl) { htmlParts.push("</ol>"); inOl = false; }
+          if (!inUl) { htmlParts.push("<ul>"); inUl = true; }
+          htmlParts.push(`<li>${formatInline(ulMatch[1])}</li>`);
+          i++;
+          continue;
+        }
+
+        // 순서 목록 (1. 2.)
+        const olMatch = trimmed.match(/^\d+\.\s+(.+)$/);
+        if (olMatch) {
+          if (inUl) { htmlParts.push("</ul>"); inUl = false; }
+          if (!inOl) { htmlParts.push("<ol>"); inOl = true; }
+          htmlParts.push(`<li>${formatInline(olMatch[1])}</li>`);
+          i++;
+          continue;
+        }
+
+        // 일반 문단
+        closeLists();
+        const paraLines = [formatInline(trimmed)];
+        i++;
+        while (
+          i < lines.length &&
+          lines[i].trim() !== "" &&
+          !/^(#{1,4}\s|[-*•]\s|\d+\.\s|\||@@CODEBLOCK_\d+@@)/.test(lines[i].trim())
+        ) {
+          paraLines.push(formatInline(lines[i].trim()));
+          i++;
+        }
+        htmlParts.push(`<p>${paraLines.join("<br />")}</p>`);
+      }
+
+      closeLists();
+
+      let finalHtml = htmlParts.join("\n");
+      codeBlocks.forEach((html, idx) => {
+        finalHtml = finalHtml.replace(`@@CODEBLOCK_${idx}@@`, html);
+      });
+      return finalHtml;
+    }
+
+    // 문항 mediaHtml에서 코드·표·보기 텍스트를 깔끔하게 추출
+    function extractMediaPlainText(mediaHtml) {
+      if (!mediaHtml) return "";
+      const temp = document.createElement("div");
+      temp.innerHTML = mediaHtml;
+      temp.querySelectorAll("svg, img").forEach(el => el.remove());
+      const text = (temp.textContent || "").replace(/\n{3,}/g, "\n\n").trim();
+      return text;
+    }
+
+    // 내장 SVG 다이어그램(예: 9번 이진 트리, 20번 그래프)을 멀티모달 전송용 PNG Data URL로 변환
+    function svgHtmlToPngDataUrl(mediaHtml) {
+      return new Promise((resolve) => {
+        if (!mediaHtml || !mediaHtml.includes("<svg")) {
+          resolve(null);
+          return;
+        }
+        try {
+          const temp = document.createElement("div");
+          temp.innerHTML = mediaHtml;
+          const svg = temp.querySelector("svg");
+          if (!svg) { resolve(null); return; }
+
+          const vb = (svg.getAttribute("viewBox") || "0 0 480 320").split(/\s+/).map(Number);
+          const w = vb[2] || 480;
+          const h = vb[3] || 320;
+          svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+          svg.setAttribute("width", String(w));
+          svg.setAttribute("height", String(h));
+
+          const svgString = new XMLSerializer().serializeToString(svg);
+          const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+          const url = URL.createObjectURL(svgBlob);
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const canvas = document.createElement("canvas");
+              canvas.width = Math.min(900, Math.round(w * 1.5));
+              canvas.height = Math.min(900, Math.round(h * 1.5));
+              const ctx = canvas.getContext("2d");
+              ctx.fillStyle = "#ffffff";
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              URL.revokeObjectURL(url);
+              resolve(canvas.toDataURL("image/png"));
+            } catch (_) {
+              URL.revokeObjectURL(url);
+              resolve(null);
+            }
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            resolve(null);
+          };
+          img.src = url;
+        } catch (_) {
+          resolve(null);
+        }
+      });
+    }
+
+    function parseDataUrl(dataUrl) {
+      const m = String(dataUrl || "").match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+      if (!m) return null;
+      return { mimeType: m[1], base64: m[2], dataUrl };
+    }
+
+    async function collectQuestionImages(q) {
+      if (!aiConfig.sendImages) return [];
+      const urls = [];
+
+      if (Array.isArray(q.diagramImages) && q.diagramImages.length > 0) {
+        urls.push(...q.diagramImages.slice(0, 2));
+      } else if (Array.isArray(q.fullQuestionCropUrls) && q.fullQuestionCropUrls.length > 0) {
+        urls.push(...q.fullQuestionCropUrls.slice(0, 2));
+      } else if (q.fullQuestionCropUrl) {
+        urls.push(q.fullQuestionCropUrl);
+      } else if (q.mediaHtml && q.mediaHtml.includes("<svg")) {
+        const pngUrl = await svgHtmlToPngDataUrl(q.mediaHtml);
+        if (pngUrl) urls.push(pngUrl);
+      }
+
+      return urls.map(parseDataUrl).filter(Boolean);
+    }
+
+    function buildAiTutorPrompt(q, userChoice) {
+      const mediaText = extractMediaPlainText(q.mediaHtml);
+      const optionLines = q.options.map((opt, idx) => `${CIRCLED_NUMS[idx]} ${opt}`).join("\n");
+      const officialAnswerText = `${CIRCLED_NUMS[q.answer - 1]} ${q.options[q.answer - 1] || ""}`;
+      let userAnswerLine = "아직 선택하지 않음";
+      if (userChoice !== null && userChoice !== undefined) {
+        const isCorrect = userChoice === q.answer;
+        userAnswerLine = `${CIRCLED_NUMS[userChoice - 1]} (${isCorrect ? "정답 선택" : "오답 선택"})`;
+      }
+
+      const structureGuide = aiConfig.style === "concise"
+        ? `다음 마크다운 구조로 핵심만 빠르고 명확하게 작성해주세요:
+### 1. 정답 및 핵심 풀이
+(정답 이유와 계산/코드 추적 핵심 과정을 간결하게 설명)
+
+### 2. 핵심 개념 요약
+(시험에 반복 출제되는 암기 포인트 2~3줄)`
+        : `다음 마크다운 구조로 친절하고 정확하게 작성해주세요:
+### 1. 정답 및 핵심 풀이
+(정답 도출 과정, 계산식이나 코드 실행 추적 단계가 있다면 단계별로 명확히 서술)
+
+### 2. 선지별 정오 분석 (①~④)
+- ① ... (O/X 및 이유)
+- ② ... (O/X 및 이유)
+- ③ ... (O/X 및 이유)
+- ④ ... (O/X 및 이유)
+
+### 3. 암기할 핵심 개념
+(9급 공무원 기출에서 자주 출제되는 관련 핵심 이론과 함정 포인트 정리)`;
+
+      return `[시험 정보]
+- 시험명: ${state.examTitle}
+- 문항 번호: ${q.num}번 (${q.category || "기출문항"})
+
+[문제]
+${q.question}
+${mediaText ? `\n[보기 / 코드 / 표 자료]\n${mediaText}\n` : ""}
+[선택지]
+${optionLines}
+
+[채점 정보]
+- 공식 정답: ${officialAnswerText}
+- 수험생 선택: ${userAnswerLine}
+
+${structureGuide}`;
+    }
+
+    // 멀티 제공자 REST API 호출기 (Google Gemini / OpenAI·호환 / Anthropic Claude)
+    async function callAiProviderApi({ prompt, systemPrompt, images = [], signal }) {
+      const provider = aiConfig.provider || "gemini";
+      const apiKey = (aiConfig.apiKey || "").trim();
+      const model = (aiConfig.model || "").trim();
+      const customBaseUrl = (aiConfig.baseUrl || "").trim();
+
+      if (!model) {
+        throw new Error("호출 모델명이 비어 있습니다. [AI 해설 설정]에서 모델명을 입력해주세요.");
+      }
+
+      if (provider === "gemini") {
+        if (!apiKey) throw new Error("Google Gemini API 키를 입력해주세요.");
+
+        let endpoint;
+        if (customBaseUrl) {
+          if (customBaseUrl.includes("{model}")) {
+            endpoint = customBaseUrl.replace("{model}", encodeURIComponent(model));
+          } else {
+            const cleanBase = customBaseUrl.replace(/\/+$/, "");
+            endpoint = cleanBase.includes(":generateContent")
+              ? cleanBase
+              : `${cleanBase}/models/${encodeURIComponent(model)}:generateContent`;
+          }
+          endpoint += (endpoint.includes("?") ? "&" : "?") + `key=${encodeURIComponent(apiKey)}`;
+        } else {
+          endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+        }
+
+        const parts = [{ text: prompt }];
+        images.forEach(img => {
+          parts.push({
+            inline_data: {
+              mime_type: img.mimeType,
+              data: img.base64
+            }
+          });
+        });
+
+        const payload = {
+          system_instruction: systemPrompt ? { parts: [{ text: systemPrompt }] } : undefined,
+          contents: [{ role: "user", parts }],
+          generationConfig: {
+            temperature: 0.3
+          }
+        };
+
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const msg = data?.error?.message || `HTTP ${res.status} ${res.statusText}`;
+          throw new Error(`Gemini API 오류: ${msg}`);
+        }
+
+        const text = (data?.candidates?.[0]?.content?.parts || [])
+          .map(p => p.text || "")
+          .join("")
+          .trim();
+        if (!text) {
+          throw new Error("Gemini 응답에서 텍스트를 추출하지 못했습니다.");
+        }
+        return text;
+      }
+
+      if (provider === "openai") {
+        let endpoint = customBaseUrl || AI_PROVIDER_PRESETS.openai.defaultBaseUrl;
+        if (/\/v1\/?$/i.test(endpoint)) {
+          endpoint = endpoint.replace(/\/+$/, "") + "/chat/completions";
+        }
+        const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(endpoint);
+        if (!apiKey && !isLocal) {
+          throw new Error("OpenAI / 호환 API 키를 입력해주세요.");
+        }
+
+        const headers = { "Content-Type": "application/json" };
+        if (apiKey) headers["Authorization"] = `Bearer ${apiKey}`;
+
+        const userContent = images.length > 0
+          ? [
+              { type: "text", text: prompt },
+              ...images.map(img => ({
+                type: "image_url",
+                image_url: { url: img.dataUrl }
+              }))
+            ]
+          : prompt;
+
+        const messages = [];
+        if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
+        messages.push({ role: "user", content: userContent });
+
+        const payload = { model, messages };
+        if (!/^o[134](-|$)/i.test(model)) {
+          payload.temperature = 0.3;
+        }
+
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload),
+          signal
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const msg = data?.error?.message || data?.message || `HTTP ${res.status} ${res.statusText}`;
+          throw new Error(`OpenAI 호환 API 오류: ${msg}`);
+        }
+
+        const content = data?.choices?.[0]?.message?.content;
+        const text = Array.isArray(content)
+          ? content.map(c => c.text || "").join("\n").trim()
+          : String(content || "").trim();
+        if (!text) {
+          throw new Error("API 응답에서 텍스트를 추출하지 못했습니다.");
+        }
+        return text;
+      }
+
+      if (provider === "claude") {
+        if (!apiKey) throw new Error("Anthropic Claude API 키를 입력해주세요.");
+        const endpoint = customBaseUrl || AI_PROVIDER_PRESETS.claude.defaultBaseUrl;
+
+        const contentBlocks = [];
+        images.forEach(img => {
+          contentBlocks.push({
+            type: "image",
+            source: {
+              type: "base64",
+              media_type: img.mimeType,
+              data: img.base64
+            }
+          });
+        });
+        contentBlocks.push({ type: "text", text: prompt });
+
+        const payload = {
+          model,
+          max_tokens: 2048,
+          system: systemPrompt || undefined,
+          messages: [{ role: "user", content: contentBlocks }]
+        };
+
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey,
+            "anthropic-version": "2023-06-01",
+            "anthropic-dangerous-direct-browser-access": "true"
+          },
+          body: JSON.stringify(payload),
+          signal
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const msg = data?.error?.message || `HTTP ${res.status} ${res.statusText}`;
+          throw new Error(`Claude API 오류: ${msg}`);
+        }
+
+        const text = (data?.content || [])
+          .filter(b => b.type === "text")
+          .map(b => b.text || "")
+          .join("\n")
+          .trim();
+        if (!text) {
+          throw new Error("Claude 응답에서 텍스트를 추출하지 못했습니다.");
+        }
+        return text;
+      }
+
+      throw new Error(`지원하지 않는 제공자입니다: ${provider}`);
+    }
+
+    function ensureAiConfiguredOrOpenModal() {
+      if (isAiConfigured()) return true;
+      showToast("AI 해설을 생성하려면 먼저 API 키와 호출 모델명을 설정해주세요.", "info");
+      openAiModal();
+      return false;
+    }
+
+    // 현재 문항 AI 해설 카드 UI 렌더링
+    function renderAiExplanationBox(q, idx) {
+      if (!els.aiExplanationCard) return;
+
+      const isLoadingThis = activeSingleAiAbort !== null && activeSingleAiQuestionIdx === idx;
+      const hasExp = Boolean(q.aiExplanation && q.aiExplanation.trim());
+
+      if (isLoadingThis) {
+        els.aiExplanationCard.classList.remove("hidden");
+        els.aiLoadingBox.classList.remove("hidden");
+        els.aiLoadingText.textContent = `${aiConfig.model || "AI"}로 ${q.num}번 문항 해설 생성 중...`;
+        els.aiErrorBox.classList.add("hidden");
+        els.aiExplanationContent.innerHTML = "";
+        els.aiExplanationMeta.textContent = "응답 대기 중...";
+        els.aiRegenerateBtn.classList.add("hidden");
+        els.aiCopyBtn.classList.add("hidden");
+        els.aiDeleteBtn.classList.add("hidden");
+        return;
+      }
+
+      if (hasExp) {
+        els.aiExplanationCard.classList.remove("hidden");
+        els.aiLoadingBox.classList.add("hidden");
+        els.aiErrorBox.classList.add("hidden");
+        els.aiExplanationContent.innerHTML = renderSafeMarkdown(q.aiExplanation);
+        const meta = q.aiExplanationMeta || {};
+        const providerName = AI_PROVIDER_PRESETS[meta.provider]?.label || meta.provider || "AI";
+        els.aiExplanationMeta.textContent = `${providerName} · ${meta.model || "알 수 없음"}${meta.createdAt ? " · " + meta.createdAt : ""}`;
+        els.aiRegenerateBtn.classList.remove("hidden");
+        els.aiCopyBtn.classList.remove("hidden");
+        els.aiDeleteBtn.classList.remove("hidden");
+      } else {
+        els.aiExplanationCard.classList.add("hidden");
+        els.aiLoadingBox.classList.add("hidden");
+        els.aiErrorBox.classList.add("hidden");
+        els.aiExplanationContent.innerHTML = "";
+      }
+    }
+
+    // 특정 문항 AI 해설 생성 및 저장
+    async function generateAiExplanationForIndex(idx, { force = false, signal = null, silentToast = false } = {}) {
+      const q = state.questions[idx];
+      if (!q) return false;
+      if (!force && q.aiExplanation && q.aiExplanation.trim()) return true;
+
+      let localController = null;
+      if (!signal) {
+        if (activeSingleAiAbort) {
+          activeSingleAiAbort.abort();
+        }
+        localController = new AbortController();
+        activeSingleAiAbort = localController;
+        activeSingleAiQuestionIdx = idx;
+        if (idx === state.currentIndex) {
+          renderAiExplanationBox(q, idx);
+          els.aiExplanationCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      }
+
+      const useSignal = signal || localController.signal;
+
+      try {
+        const images = await collectQuestionImages(q);
+        const systemPrompt =
+          "당신은 대한민국 9급 공무원 시험(컴퓨터일반·정보보호론·공통과목) 전문 일타 강사입니다. 공식 정답을 기준으로 정확하고 알기 쉽게 한국어 마크다운 해설을 작성합니다. 수식이나 코드는 가독성 있게 정리하고, 불필요한 인사말 없이 바로 해설을 시작하세요.";
+        const prompt = buildAiTutorPrompt(q, state.userAnswers[idx]);
+
+        const resultText = await callAiProviderApi({
+          prompt,
+          systemPrompt,
+          images,
+          signal: useSignal
+        });
+
+        q.aiExplanation = resultText;
+        q.aiExplanationMeta = {
+          provider: aiConfig.provider,
+          model: aiConfig.model,
+          style: aiConfig.style,
+          createdAt: new Date().toLocaleString("ko-KR", {
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+          })
+        };
+
+        if (localController && activeSingleAiAbort === localController) {
+          activeSingleAiAbort = null;
+          activeSingleAiQuestionIdx = null;
+        }
+
+        await saveLibraryToIDB();
+        if (!signal) {
+          triggerAutoSyncDebounced();
+        }
+
+        if (idx === state.currentIndex) {
+          renderQuestion();
+        }
+        if (!silentToast) {
+          showToast(`${q.num}번 문항 AI 해설 생성 및 저장 완료!`, "success");
+        }
+        return true;
+      } catch (err) {
+        if (localController && activeSingleAiAbort === localController) {
+          activeSingleAiAbort = null;
+          activeSingleAiQuestionIdx = null;
+        }
+
+        if (err.name === "AbortError") {
+          if (idx === state.currentIndex) renderAiExplanationBox(q, idx);
+          if (!silentToast) showToast("AI 해설 생성이 중단되었습니다.", "info");
+          return false;
+        }
+
+        console.error("AI 해설 생성 오류:", err);
+        if (idx === state.currentIndex && els.aiExplanationCard) {
+          els.aiExplanationCard.classList.remove("hidden");
+          els.aiLoadingBox.classList.add("hidden");
+          els.aiErrorBox.classList.remove("hidden");
+          els.aiErrorBox.textContent = `해설 생성 실패: ${err.message}`;
+          els.aiRegenerateBtn.classList.remove("hidden");
+          els.aiCopyBtn.classList.add("hidden");
+          els.aiDeleteBtn.classList.add("hidden");
+        }
+        if (!silentToast) {
+          showToast(`AI 해설 생성 실패: ${err.message}`, "error");
+        }
+        return false;
+      }
+    }
+
+    // 현재 문항 AI 해설 생성 버튼 핸들러
+    async function handleCurrentQuestionAiExplain(force = false) {
+      if (!ensureAiConfiguredOrOpenModal()) return;
+      const idx = state.currentIndex;
+      await generateAiExplanationForIndex(idx, { force: true, silentToast: false });
+    }
+
+    if (els.headerAiExplainBtn) {
+      els.headerAiExplainBtn.addEventListener("click", () => handleCurrentQuestionAiExplain(true));
+    }
+    if (els.feedbackAiExplainBtn) {
+      els.feedbackAiExplainBtn.addEventListener("click", () => handleCurrentQuestionAiExplain(true));
+    }
+    if (els.aiRegenerateBtn) {
+      els.aiRegenerateBtn.addEventListener("click", () => handleCurrentQuestionAiExplain(true));
+    }
+    if (els.aiAbortSingleBtn) {
+      els.aiAbortSingleBtn.addEventListener("click", () => {
+        if (activeSingleAiAbort) activeSingleAiAbort.abort();
+      });
+    }
+    if (els.aiCopyBtn) {
+      els.aiCopyBtn.addEventListener("click", () => {
+        const q = state.questions[state.currentIndex];
+        if (!q?.aiExplanation) return;
+        const ok = copyTextToClipboard(q.aiExplanation);
+        showToast(ok ? "AI 해설이 클립보드에 복사되었습니다." : "복사에 실패했습니다.", ok ? "success" : "error");
+      });
+    }
+    if (els.aiDeleteBtn) {
+      els.aiDeleteBtn.addEventListener("click", async () => {
+        const q = state.questions[state.currentIndex];
+        if (!q) return;
+        delete q.aiExplanation;
+        delete q.aiExplanationMeta;
+        renderQuestion();
+        await saveLibraryToIDB();
+        triggerAutoSyncDebounced();
+        showToast(`${q.num}번 문항의 AI 해설이 삭제되었습니다.`, "info");
+      });
+    }
+
+    /**
+     * 일괄 AI 해설 생성 (틀린 문제만 / 현재 회차 전체 미생성 문항)
+     */
+    function updateBatchProgressUI(visible, text = "", pct = 0) {
+      const pairs = [
+        [els.resultBatchProgress, els.resultBatchStatus, els.resultBatchBar],
+        [els.modalBatchProgress, els.modalBatchStatus, els.modalBatchBar]
+      ];
+      pairs.forEach(([box, statusEl, barEl]) => {
+        if (!box) return;
+        box.classList.toggle("hidden", !visible);
+        if (statusEl) statusEl.textContent = text;
+        if (barEl) barEl.style.width = `${pct}%`;
+      });
+
+      const batchBtns = [
+        els.resultBatchWrongBtn,
+        els.resultBatchAllBtn,
+        els.modalBatchWrongBtn,
+        els.modalBatchAllBtn
+      ];
+      batchBtns.forEach(btn => {
+        if (btn) btn.disabled = visible;
+      });
+    }
+
+    function abortBatchAiGeneration() {
+      if (activeBatchAbort) {
+        activeBatchAbort.abort();
+      }
+    }
+
+    async function runBatchAiGeneration(mode) {
+      if (isBatchRunning) return;
+      if (!ensureAiConfiguredOrOpenModal()) return;
+
+      const targetIndices = [];
+      state.questions.forEach((q, idx) => {
+        const hasExp = Boolean(q.aiExplanation && q.aiExplanation.trim());
+        if (mode === "wrong") {
+          const picked = state.userAnswers[idx];
+          if (picked !== null && picked !== q.answer && !hasExp) {
+            targetIndices.push(idx);
+          }
+        } else {
+          if (!hasExp) {
+            targetIndices.push(idx);
+          }
+        }
+      });
+
+      if (targetIndices.length === 0) {
+        showToast(
+          mode === "wrong"
+            ? "AI 해설이 아직 없는 틀린 문제가 없습니다."
+            : "현재 회차의 모든 문항에 이미 AI 해설이 생성되어 있습니다.",
+          "info"
+        );
+        return;
+      }
+
+      isBatchRunning = true;
+      activeBatchAbort = new AbortController();
+      const total = targetIndices.length;
+      let successCount = 0;
+      let failCount = 0;
+      let aborted = false;
+
+      updateBatchProgressUI(true, `0 / ${total} 생성 준비 중...`, 0);
+
+      for (let i = 0; i < total; i++) {
+        if (activeBatchAbort.signal.aborted) {
+          aborted = true;
+          break;
+        }
+        const qIdx = targetIndices[i];
+        const qNum = state.questions[qIdx].num;
+        const pct = Math.round((i / total) * 100);
+        updateBatchProgressUI(true, `${i + 1} / ${total} 생성 중... (${qNum}번 문항)`, pct);
+
+        const ok = await generateAiExplanationForIndex(qIdx, {
+          force: false,
+          signal: activeBatchAbort.signal,
+          silentToast: true
+        });
+
+        if (activeBatchAbort.signal.aborted) {
+          aborted = true;
+          break;
+        }
+
+        if (ok) successCount++;
+        else failCount++;
+
+        if (!els.resultContainer.classList.contains("hidden")) {
+          renderReviewList();
+        }
+      }
+
+      isBatchRunning = false;
+      activeBatchAbort = null;
+      updateBatchProgressUI(false);
+
+      if (successCount > 0) {
+        triggerAutoSyncDebounced();
+        renderQuestion();
+        if (!els.resultContainer.classList.contains("hidden")) {
+          renderReviewList();
+        }
+      }
+
+      if (aborted) {
+        showToast(`일괄 생성이 중단되었습니다. (완료 ${successCount}문항 / 실패 ${failCount}문항)`, "info");
+      } else if (failCount > 0) {
+        showToast(`AI 해설 일괄 생성 완료: 성공 ${successCount}문항, 실패 ${failCount}문항`, "info");
+      } else {
+        showToast(`총 ${successCount}문항의 AI 해설을 모두 생성하고 저장했습니다!`, "success");
+      }
+    }
+
+    if (els.resultBatchWrongBtn) els.resultBatchWrongBtn.addEventListener("click", () => runBatchAiGeneration("wrong"));
+    if (els.resultBatchAllBtn) els.resultBatchAllBtn.addEventListener("click", () => runBatchAiGeneration("all"));
+    if (els.modalBatchWrongBtn) els.modalBatchWrongBtn.addEventListener("click", () => runBatchAiGeneration("wrong"));
+    if (els.modalBatchAllBtn) els.modalBatchAllBtn.addEventListener("click", () => runBatchAiGeneration("all"));
+    if (els.resultBatchAbortBtn) els.resultBatchAbortBtn.addEventListener("click", abortBatchAiGeneration);
+    if (els.modalBatchAbortBtn) els.modalBatchAbortBtn.addEventListener("click", abortBatchAiGeneration);
+
+    /**
+     * AI 설정 모달 제어 및 연결 테스트
+     */
+    function renderAiModelPresets(provider) {
+      if (!els.aiModelPresets) return;
+      const preset = AI_PROVIDER_PRESETS[provider] || AI_PROVIDER_PRESETS.gemini;
+      els.aiModelPresets.innerHTML = "";
+
+      preset.models.forEach((modelId) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        const isActive = (els.aiModelInput?.value || "").trim() === modelId;
+        chip.className = isActive
+          ? "px-2.5 py-1 rounded-full text-[11px] font-bold bg-violet-600 text-white border border-violet-600 transition"
+          : "px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 hover:bg-violet-50 text-slate-700 hover:text-violet-800 border border-slate-200 hover:border-violet-300 transition";
+        chip.textContent = modelId;
+        chip.addEventListener("click", () => {
+          if (els.aiModelInput) els.aiModelInput.value = modelId;
+          renderAiModelPresets(provider);
+        });
+        els.aiModelPresets.appendChild(chip);
+      });
+    }
+
+    function applyProviderUiHints(provider, replaceValues = false) {
+      const preset = AI_PROVIDER_PRESETS[provider] || AI_PROVIDER_PRESETS.gemini;
+      if (els.aiApiKeyInput) els.aiApiKeyInput.placeholder = preset.keyPlaceholder;
+      if (els.aiModelInput) {
+        els.aiModelInput.placeholder = `예: ${preset.defaultModel}`;
+        if (replaceValues) els.aiModelInput.value = preset.defaultModel;
+      }
+      if (els.aiBaseUrlInput) {
+        els.aiBaseUrlInput.placeholder = preset.baseUrlPlaceholder;
+        if (replaceValues) els.aiBaseUrlInput.value = preset.defaultBaseUrl;
+      }
+      if (els.aiBaseUrlHint) {
+        els.aiBaseUrlHint.textContent = provider === "openai"
+          ? "(OpenRouter·Groq·Ollama 등 호환 URL 편집 가능)"
+          : "(비워두면 공식 기본 엔드포인트 사용)";
+      }
+      renderAiModelPresets(provider);
+    }
+
+    function syncAiConfigFromModalInputs() {
+      aiConfig.provider = els.aiProviderSelect?.value || "gemini";
+      aiConfig.apiKey = (els.aiApiKeyInput?.value || "").trim();
+      aiConfig.model = (els.aiModelInput?.value || "").trim();
+      aiConfig.baseUrl = (els.aiBaseUrlInput?.value || "").trim();
+      aiConfig.sendImages = Boolean(els.aiSendImagesCheckbox?.checked);
+      aiConfig.style = els.aiStyleSelect?.value || "detailed";
+    }
+
+    function openAiModal() {
+      if (!els.aiModal) return;
+      els.aiProviderSelect.value = aiConfig.provider || "gemini";
+      els.aiApiKeyInput.value = aiConfig.apiKey || "";
+      els.aiApiKeyInput.type = "password";
+      els.aiModelInput.value = aiConfig.model || AI_PROVIDER_PRESETS[aiConfig.provider || "gemini"].defaultModel;
+      els.aiBaseUrlInput.value = aiConfig.baseUrl || "";
+      els.aiSendImagesCheckbox.checked = aiConfig.sendImages !== false;
+      els.aiStyleSelect.value = aiConfig.style || "detailed";
+      applyProviderUiHints(aiConfig.provider || "gemini", false);
+      if (els.aiTestStatus) {
+        els.aiTestStatus.className = "text-xs text-slate-600 flex-1 min-w-0";
+        els.aiTestStatus.textContent = "연결 테스트 버튼으로 API 키와 모델 응답을 바로 확인할 수 있습니다.";
+      }
+      els.aiModal.classList.remove("hidden");
+    }
+
+    function closeAiModal() {
+      if (els.aiModal) els.aiModal.classList.add("hidden");
+    }
+
+    if (els.openAiModalBtn) els.openAiModalBtn.addEventListener("click", openAiModal);
+    if (els.closeAiModalBtn) els.closeAiModalBtn.addEventListener("click", closeAiModal);
+    if (els.doneAiModalBtn) els.doneAiModalBtn.addEventListener("click", closeAiModal);
+    if (els.aiModal) {
+      els.aiModal.addEventListener("click", (e) => {
+        if (e.target === els.aiModal) closeAiModal();
+      });
+    }
+
+    if (els.aiProviderSelect) {
+      els.aiProviderSelect.addEventListener("change", (e) => {
+        applyProviderUiHints(e.target.value, true);
+      });
+    }
+
+    if (els.aiModelInput) {
+      els.aiModelInput.addEventListener("input", () => {
+        renderAiModelPresets(els.aiProviderSelect?.value || "gemini");
+      });
+    }
+
+    if (els.resetBaseUrlBtn) {
+      els.resetBaseUrlBtn.addEventListener("click", () => {
+        const preset = AI_PROVIDER_PRESETS[els.aiProviderSelect?.value || "gemini"];
+        if (els.aiBaseUrlInput && preset) {
+          els.aiBaseUrlInput.value = preset.defaultBaseUrl;
+        }
+      });
+    }
+
+    if (els.toggleAiKeyVisBtn) {
+      els.toggleAiKeyVisBtn.addEventListener("click", () => {
+        if (!els.aiApiKeyInput) return;
+        els.aiApiKeyInput.type = els.aiApiKeyInput.type === "password" ? "text" : "password";
+      });
+    }
+
+    if (els.saveAiSettingsBtn) {
+      els.saveAiSettingsBtn.addEventListener("click", () => {
+        syncAiConfigFromModalInputs();
+        saveAiConfig();
+        showToast(`AI 설정이 저장되었습니다 (${AI_PROVIDER_PRESETS[aiConfig.provider]?.label || aiConfig.provider} · ${aiConfig.model || "모델 미지정"}).`, "success");
+      });
+    }
+
+    if (els.resetAiSettingsBtn) {
+      els.resetAiSettingsBtn.addEventListener("click", () => {
+        aiConfig = {
+          provider: "gemini",
+          apiKey: "",
+          model: "gemini-2.5-flash",
+          baseUrl: "",
+          sendImages: true,
+          style: "detailed"
+        };
+        saveAiConfig();
+        openAiModal();
+        showToast("AI API 설정이 초기화되었습니다.", "info");
+      });
+    }
+
+    if (els.aiTestBtn) {
+      els.aiTestBtn.addEventListener("click", async () => {
+        syncAiConfigFromModalInputs();
+        saveAiConfig();
+
+        els.aiTestBtn.disabled = true;
+        els.aiTestBtn.textContent = "테스트 중...";
+        els.aiTestStatus.className = "text-xs text-violet-700 font-semibold flex-1 min-w-0";
+        els.aiTestStatus.textContent = `${aiConfig.model || "모델"} 연결 확인 중...`;
+
+        const startedAt = performance.now();
+        try {
+          const reply = await callAiProviderApi({
+            prompt: "1+1=? 숫자만 답해줘",
+            systemPrompt: "",
+            images: []
+          });
+          const latencyMs = Math.round(performance.now() - startedAt);
+          els.aiTestStatus.className = "text-xs text-emerald-700 font-bold flex-1 min-w-0";
+          els.aiTestStatus.textContent = `✓ 연결 성공 (${latencyMs}ms) · 응답: "${reply.slice(0, 40)}"`;
+        } catch (err) {
+          els.aiTestStatus.className = "text-xs text-rose-700 font-semibold flex-1 min-w-0";
+          els.aiTestStatus.textContent = `✕ 연결 실패: ${err.message}`;
+        } finally {
+          els.aiTestBtn.disabled = false;
+          els.aiTestBtn.textContent = "연결 테스트";
+        }
+      });
+    }
+
     // 앱 초기화: IndexedDB 로컬 기록 로드 -> 화면 렌더링 -> 자동 동기화 설정 시 Gist 최신 상태 확인
     window.addEventListener("DOMContentLoaded", async () => {
       loadSyncConfig();
+      loadAiConfig();
+      updateAiStatusDot();
       renderQuestion();
       await loadLibraryFromIDB();
 
